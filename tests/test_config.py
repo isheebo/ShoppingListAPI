@@ -44,5 +44,5 @@ class TestProductionConfiguration(unittest.TestCase):
             self.test_app.config['SQLALCHEMY_TRACK_MODIFICATIONS'])
         self.assertEqual(
             self.test_app.config['AUTH_EXPIRY_TIME_IN_SECONDS'], 3600)
-        self.assertTrue(
-            self.test_app.config['SQLALCHEMY_DATABASE_URI'], os.getenv('DATABASE_URL'))
+        self.assertIsNone(
+            self.test_app.config['SQLALCHEMY_DATABASE_URI'])
