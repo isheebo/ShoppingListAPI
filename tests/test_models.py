@@ -5,7 +5,7 @@ from app import create_app, db
 from app.models import BaseModel, User, BlacklistToken, ShoppingList, Item
 
 
-class TestUserModel(unittest.TestCase):
+class TestModels(unittest.TestCase):
     def setUp(self):
         self.test_app = create_app("testing")
         self.app_context = self.test_app.app_context()
@@ -102,8 +102,9 @@ class TestUserModel(unittest.TestCase):
         self.assertEqual(queried_list.name, shoppinglist.name)
         self.assertIsNotNone(shoppinglist.id)
         self.assertEqual(shoppinglist.user_id, user.id)
-        item = Item("cabbages", "2", "5,000/=", shoppinglist.id)
+        item = Item(shoppinglist.id, "cabbages", "2", "5,000/=")
         self.assertIsNotNone(item)
+        self.assertFalse(item.has_been_bought)
         self.assertIsNone(item.id)
         self.assertEqual(item.name, "cabbages")
         self.assertEqual(item.price, "5,000/=")

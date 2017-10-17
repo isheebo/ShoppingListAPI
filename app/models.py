@@ -130,8 +130,9 @@ class Item(db.Model, BaseModel):
     date_added = Column(DateTime, default=datetime.now())
     date_modified = Column(DateTime, default=datetime.now())
 
-    def __init__(self, name, quantity, price, list_id):
+    def __init__(self, list_id, name, quantity, price, status=False):
         self.name = name
         self.price = price
         self.quantity = quantity
         self.shoppinglist_id = list_id
+        self.has_been_bought = status
