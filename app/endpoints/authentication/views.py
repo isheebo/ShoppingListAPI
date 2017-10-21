@@ -48,7 +48,7 @@ class RegisterUser(MethodView):
             if user.save():
                 return jsonify({
                     "status": "success",
-                    "message": f"user with {user.email} has been registered"
+                    "message": f"user with email '{user.email}' has been registered"
                 }), 201
 
         return jsonify({
