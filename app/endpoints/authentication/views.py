@@ -2,6 +2,7 @@ import json
 import re
 from flask import jsonify, request, Blueprint
 from flask.views import MethodView
+from flask_bcrypt import Bcrypt
 
 from app.models import User, BlacklistToken
 from app.endpoints import parse_auth_header
@@ -114,10 +115,55 @@ class Logout(MethodView):
             }), 200
 
 
+class ResetPassword(MethodView):
+    @staticmethod
+    def post():
+        email = request.form.get("email")
+        password = request.form.get("password")
+        confirm_password = request.form.get("confirm password")
+        if email and password and confirm_password:
+            # Password validation: a valid password contains 6-8 characters,
+            # must contain a number, a 'Aa'letters and special characters
+            if not re.match(r"^(?=.*[\d])(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*])[\w!@#$%^&*]{8,}$", password):
+                return jsonify({
+                    "status": "failure",
+                    "message": "password must be 8 or more characters and should consist atleast one lower, uppercase"
+                               " letters, number and special character '(!@#$%^&*)'"
+                }), 400
+
+            password_hash = Bcrypt().generate_password_hash(password)
+            if Bcrypt().check_password_hash(password_hash, confirm_password):
+                user = User.query.filter_by(email=email.lower()).first()
+                if user:
+                    user.password = password
+                    user.save()
+                    return jsonify({
+                        "status": "success",
+                        "message": f"password reset successful for '{user.email}'"
+                    }), 200
+
+                return jsonify({
+                    "status": "failure",
+                    "message": f"user with email `{email}` not found!"
+                }), 403
+            return jsonify({
+                "status": "failure",
+                "message": "the given passwords don't match"
+            }), 403
+
+        return jsonify({
+            "status": "failure",
+            "message": "the fields: email, password, and 'confirm password' are required"
+        }), 400
+
+
 register_user = RegisterUser.as_view("register_user")
 login = Login.as_view("login")
 logout = Logout.as_view("logout")
+reset_password = ResetPassword.as_view("reset_password")
 
 auth.add_url_rule("/auth/register", view_func=register_user, methods=['POST'])
 auth.add_url_rule("/auth/login", view_func=login, methods=['POST'])
 auth.add_url_rule("/auth/logout", view_func=logout, methods=['POST'])
+auth.add_url_rule("/auth/reset-password",
+                  view_func=reset_password, methods=['POST'])
