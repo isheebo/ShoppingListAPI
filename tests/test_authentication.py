@@ -270,3 +270,42 @@ class TestLogout(BaseTests):
         self.assertEqual(data["status"], "failure")
         self.assertEqual(
             data["message"], "error in token: Invalid payload padding")
+
+    def test_logout_fails_if_an_already_blacklisted_token_is_used(self):
+        # Register a User
+        resp = self.test_client.post(
+            "/api/v1/auth/register", data=self.user_data)
+        self.assertEqual(resp.status_code, 201)
+        data = json.loads(resp.data)
+        self.assertEqual(
+            data["message"], "user with email 'testor@example.com' has been registered")
+        self.assertEqual(data["status"], "success")
+
+        # Login a User
+
+        resp = self.test_client.post("/api/v1/auth/login", data=self.user_data)
+        self.assertEqual(resp.status_code, 200)
+        data = json.loads(resp.data)
+        self.assertEqual(
+            data["message"], "Login successful for 'testor@example.com'")
+        self.assertEqual(data["status"], "success")
+        self.assertIsNotNone(data["token"])
+
+        token = data['token']
+        # Logout a user
+        resp = self.test_client.post(
+            "/api/v1/auth/logout", headers=dict(Authorization=f"Bearer {token}"))
+        self.assertEqual(resp.status_code, 200)
+        data = json.loads(resp.data)
+        self.assertEqual(data["status"], "success")
+        self.assertEqual(
+            data["message"], "Successfully logged out 'testor@example.com'")
+
+        # On first logout, the token is blacklisted, on the second, the logout should fail with an error.
+        resp = self.test_client.post(
+            "/api/v1/auth/logout", headers=dict(Authorization=f"Bearer {token}"))
+        self.assertEqual(resp.status_code, 401)
+        data = json.loads(resp.data)
+        self.assertEqual(data["status"], "failure")
+        self.assertEqual(
+            data["message"], 'error in token: token has already expired')
