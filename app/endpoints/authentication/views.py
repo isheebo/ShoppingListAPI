@@ -16,22 +16,6 @@ def is_valid_email(email):
     return re.match(exp, email)
 
 
-# def parse_auth_header():
-#     auth_header = request.headers.get("Authorization")
-#     if auth_header:
-#         # check if we have are using the JWT-Based Aunthentication mechanism
-#         if len(auth_header.split()) != 2 or (auth_header.split()[0]).title() != "Bearer":
-#             return jsonify({
-#                 "status": "failure",
-#                 "message": "Authentication Header is poorly formatted. The acceptable format is `Bearer <jwt_token>`"
-#             }), 401
-#         return auth_header.split()[1]
-#     return jsonify({
-#         "status": "failure",
-#         "message": "Authorization header must be set for a successful request"
-#     }), 401
-
-
 class RegisterUser(MethodView):
     @staticmethod
     def post():
