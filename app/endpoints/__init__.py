@@ -15,9 +15,11 @@ def parse_auth_header(request):
 
         token = auth_header.split()[1]
         user_id, err = User.verify_token(token)
+
         if isinstance(user_id, int) and err is None:
             return user_id, "successful obtained user_id", "success", 200, token
-        message = f"ERROR: {err}",
+        message = f"error in token: {err}"
         return None, message, "failure", 401, None
+
     message = "Authorization header must be set for a successful request"
     return None, message, "failure", 403, None  # Unauthorized

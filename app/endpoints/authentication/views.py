@@ -127,7 +127,7 @@ class Logout(MethodView):
             return jsonify({
                 "status": "success",
                 "message": f"Successfully logged out '{user.email}'"
-            }), 400
+            }), 200
 
 
 register_user = RegisterUser.as_view("register_user")
