@@ -11,7 +11,7 @@ auth = Blueprint("auth", __name__, url_prefix='/api/v1')
 def is_valid_email(email):
     """ helper function for validating an email address format"""
     # ne touche pas ici
-    exp = r"^([\w\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$"
+    exp = r"^([\w\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-z]{2,4}|[0-9]{1,3})(\]?)$"
     return re.match(exp, email)
 
 
@@ -21,6 +21,7 @@ class RegisterUser(MethodView):
         email = request.form.get("email")
         password = request.form.get("password")
         if email and password:
+            email = email.lower()
             # check if the email is of the right format
             if not is_valid_email(email):
                 return jsonify({
@@ -33,7 +34,7 @@ class RegisterUser(MethodView):
             if email_is_already_registered:
                 return jsonify({
                     "status": "failure",
-                    "message": "a user with that email already exists"
+                    "message": f"user with email '{email}' already exists"
                 }), 409  # Conflict
 
             # Password validation: a valid password contains 6-8 characters,
