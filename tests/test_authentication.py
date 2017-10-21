@@ -143,3 +143,130 @@ class TestLogin(BaseTests):
         self.assertEqual(
             data["message"], "you need to enter both the email and the password"
         )
+
+
+class TestLogout(BaseTests):
+    def setUp(self):
+        super(TestLogout, self).setUp()
+        self.user_data = dict(email="testor@example.com", password="Squ3@Ler")
+
+    def test_logout_is_successful_for_a_logged_in_user(self):
+        # Register a User
+        resp = self.test_client.post(
+            "/api/v1/auth/register", data=self.user_data)
+        self.assertEqual(resp.status_code, 201)
+        data = json.loads(resp.data)
+        self.assertEqual(
+            data["message"], "user with email 'testor@example.com' has been registered")
+        self.assertEqual(data["status"], "success")
+
+        # Login a User
+
+        resp = self.test_client.post("/api/v1/auth/login", data=self.user_data)
+        self.assertEqual(resp.status_code, 200)
+        data = json.loads(resp.data)
+        self.assertEqual(
+            data["message"], "Login successful for 'testor@example.com'")
+        self.assertEqual(data["status"], "success")
+        self.assertIsNotNone(data["token"])
+
+        # Logout a user
+        resp = self.test_client.post(
+            "/api/v1/auth/logout", headers=dict(Authorization=f"Bearer {data['token']}"))
+        self.assertEqual(resp.status_code, 200)
+        data = json.loads(resp.data)
+        self.assertEqual(data["status"], "success")
+        self.assertEqual(
+            data["message"], "Successfully logged out 'testor@example.com'")
+
+    def test_logout_fails_if_authorization_header_is_not_provided(self):
+        # Try Logging out without an Authorization header
+        resp = self.test_client.post("/api/v1/auth/logout")
+        self.assertEqual(resp.status_code, 403)
+        data = json.loads(resp.data)
+        self.assertEqual(data["status"], "failure")
+        self.assertEqual(
+            data["message"], 'Authorization header must be set for a successful request')
+
+    def test_logout_fails_if_authorization_header_is_poorly_formatted(self):
+        # Register a User
+        resp = self.test_client.post(
+            "/api/v1/auth/register", data=self.user_data)
+        self.assertEqual(resp.status_code, 201)
+        data = json.loads(resp.data)
+        self.assertEqual(
+            data["message"], "user with email 'testor@example.com' has been registered")
+        self.assertEqual(data["status"], "success")
+
+        # Login a User
+
+        resp = self.test_client.post("/api/v1/auth/login", data=self.user_data)
+        self.assertEqual(resp.status_code, 200)
+        data = json.loads(resp.data)
+        self.assertEqual(
+            data["message"], "Login successful for 'testor@example.com'")
+        self.assertEqual(data["status"], "success")
+        self.assertIsNotNone(data["token"])
+
+        # Try Logging out a user with a poorly formatted Authorization Header
+        resp = self.test_client.post("/api/v1/auth/logout",  # right word should be 'Bearer'*
+                                     headers=dict(Authorization=f"Bearers {data['token']}"))
+        self.assertEqual(resp.status_code, 403)
+        data = json.loads(resp.data)
+        self.assertEqual(data["status"], "failure")
+        self.assertEqual(
+            data["message"], "Authentication Header is poorly formatted. The acceptable format is `Bearer <jwt_token>`")
+
+    def test_logout_fails_if_token_has_expired_or_is_corrupted(self):
+        # Register a User
+        resp = self.test_client.post(
+            "/api/v1/auth/register", data=self.user_data)
+        self.assertEqual(resp.status_code, 201)
+        data = json.loads(resp.data)
+        self.assertEqual(
+            data["message"], "user with email 'testor@example.com' has been registered")
+        self.assertEqual(data["status"], "success")
+
+        # Login a User
+
+        resp = self.test_client.post("/api/v1/auth/login", data=self.user_data)
+        self.assertEqual(resp.status_code, 200)
+        data = json.loads(resp.data)
+        self.assertEqual(
+            data["message"], "Login successful for 'testor@example.com'")
+        self.assertEqual(data["status"], "success")
+        self.assertIsNotNone(data["token"])
+
+        invalid_token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1MDg2MTExNjgs" + \
+            "ImV4cCI6MTUwODYxNDc2OCwic3ViIjoyfQ.I_WBI93N3PRlAXOasnXJ5QY4Zg0ggvNXA4b2B2CQ9g0"
+
+        # For an expired/blacklisted/invalid token but of right length
+        resp = self.test_client.post("/api/v1/auth/logout",
+                                     headers=dict(Authorization=f"Bearer {invalid_token}"))
+        self.assertEqual(resp.status_code, 401)
+        data = json.loads(resp.data)
+
+        self.assertEqual(data["status"], "failure")
+        self.assertEqual(
+            data["message"], 'error in token: Signature verification failed')
+
+        # for a token with an invalid/corrupted header
+        resp = self.test_client.post("/api/v1/auth/logout",
+                                     headers=dict(Authorization=f"Bearer {invalid_token[2:]}"))
+        self.assertEqual(resp.status_code, 401)
+        data = json.loads(resp.data)
+
+        self.assertEqual(data["status"], "failure")
+        self.assertEqual(
+            data["message"], "error in token: Invalid header string: 'utf-8' codec "
+            "can't decode byte 0x97 in position 2: invalid start byte")
+
+        # for a token with an invalid/corrupted payload
+        resp = self.test_client.post("/api/v1/auth/logout",
+                                     headers=dict(Authorization=f"Bearer {invalid_token[:41] + invalid_token[42:]}"))
+        self.assertEqual(resp.status_code, 401)
+        data = json.loads(resp.data)
+
+        self.assertEqual(data["status"], "failure")
+        self.assertEqual(
+            data["message"], "error in token: Invalid payload padding")
