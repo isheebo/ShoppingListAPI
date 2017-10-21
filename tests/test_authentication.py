@@ -309,3 +309,68 @@ class TestLogout(BaseTests):
         self.assertEqual(data["status"], "failure")
         self.assertEqual(
             data["message"], 'error in token: token has already expired')
+
+
+class TestResetPassword(BaseTests):
+    def setUp(self):
+        super(TestResetPassword, self).setUp()
+        self.user_data = dict(email="testor@example.com", password="Squ3@Ler")
+
+    def test_reset_password_is_successful_for_an_existing_email(self):
+        # Register a User
+        resp = self.test_client.post(
+            "/api/v1/auth/register", data=self.user_data)
+        self.assertEqual(resp.status_code, 201)
+        data = json.loads(resp.data)
+        self.assertEqual(
+            data["message"], "user with email 'testor@example.com' has been registered")
+        self.assertEqual(data["status"], "success")
+
+        # reset password for `testor@example.com`
+        resp = self.test_client.post("/api/v1/auth/reset-password",
+                                     data={'password': '!0ctoPus', 'confirm password': '!0ctoPus',
+                                           'email': 'testor@example.com'})
+        self.assertEqual(resp.status_code, 200)
+        data = json.loads(resp.data)
+        self.assertEqual(data["status"], "success")
+        self.assertEqual(
+            data["message"], "password reset successful for 'testor@example.com'")
+
+    def test_reset_password_fails_if_email_and_hence_user_is_non_existent(self):
+        resp = self.test_client.post("/api/v1/auth/reset-password",
+                                     data={'password': '!0ctoPus', 'confirm password': '!0ctoPus',
+                                           'email': 'testor@example.com'})
+        self.assertEqual(resp.status_code, 403)
+        data = json.loads(resp.data)
+        self.assertEqual(data["status"], "failure")
+        self.assertEqual(
+            data["message"], 'user with email `testor@example.com` not found!')
+
+    def test_reset_password_fails_if_the_given_passwords_do_not_match(self):
+        resp = self.test_client.post("/api/v1/auth/reset-password",
+                                     data={'password': '!0ctoPuS', 'confirm password': '!0ctoPus',
+                                           'email': 'testor@example.com'})
+        self.assertEqual(resp.status_code, 403)
+        data = json.loads(resp.data)
+        self.assertEqual(data["status"], "failure")
+        self.assertEqual(data["message"], "the given passwords don't match")
+
+    def test_reset_password_fails_if_password_has_less_than_8_characters_or_has_more_but_poorly_formatted(self):
+        resp = self.test_client.post("/api/v1/auth/reset-password",
+                                     data={'password': 'testing', 'confirm password': 'testing',
+                                           'email': 'testor@example.com'})
+        self.assertEqual(resp.status_code, 400)
+        data = json.loads(resp.data)
+        self.assertEqual(data["status"], "failure")
+        self.assertEqual(
+            data["message"], "password must be 8 or more characters and should consist atleast one lower,"
+            " uppercase letters, number and special character '(!@#$%^&*)'")
+
+    def test_reset_password_fails_if_none_or_one_of_the_fields_are_not_given(self):
+        # reset password for `testor@example.com`
+        resp = self.test_client.post("/api/v1/auth/reset-password")
+        self.assertEqual(resp.status_code, 400)
+        data = json.loads(resp.data)
+        self.assertEqual(data["status"], "failure")
+        self.assertEqual(
+            data["message"], "the fields: email, password, and 'confirm password' are required")
