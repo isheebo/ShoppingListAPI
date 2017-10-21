@@ -84,6 +84,7 @@ class TestLogin(BaseTests):
         self.assertEqual(
             data["message"], "Login successful for 'testor@example.com'")
         self.assertEqual(data["status"], "success")
+        self.assertIsNotNone(data["token"])
 
     def test_login_fails_if_password_is_incorrect(self):
         # Register a User
