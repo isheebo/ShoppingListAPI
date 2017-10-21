@@ -5,6 +5,7 @@ from app import create_app, db
 class BaseTests(unittest.TestCase):
     def setUp(self):
         self.test_app = create_app("testing")
+        self.test_client = self.test_app.test_client()
         self.app_context = self.test_app.request_context()
         self.app_context.push()
         db.drop_all()
