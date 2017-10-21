@@ -12,4 +12,6 @@ def create_app(configuration="development"):
     db.init_app(app)
 
     # register blueprints
+    from app.endpoints.authentication.views import auth
+    app.register_blueprint(auth)
     return app
