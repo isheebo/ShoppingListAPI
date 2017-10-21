@@ -58,5 +58,42 @@ class RegisterUser(MethodView):
         }), 400  # Bad Request
 
 
+class Login(MethodView):
+    @staticmethod
+    def post():
+        email = request.form.get("email")
+        password = request.form.get("password")
+        if email and password:
+            email = email.lower()
+            if not is_valid_email(email):
+                return jsonify({
+                    "status": "failure",
+                    "message": "invalid email format"
+                }), 400
+
+            user = User.query.filter_by(email=email).first()
+            if user:
+                if user.validate_password(password):
+                    return jsonify({
+                        "status": "success",
+                        "message": f"Login successful for '{user.email}'"
+                    }), 200
+                return jsonify({
+                    "status": "failure",
+                    "message": "Wrong password for the given email address"
+                }), 403
+            return jsonify({
+                "status": "failure",
+                "message": f"user with email '{email}' doesn't exist"
+            }), 403
+        return jsonify({
+            "status": "failure",
+            "message": "you need to enter both the email and the password"
+        }), 400
+
+
 register_user = RegisterUser.as_view("register_user")
+login = Login.as_view("login")
+
 auth.add_url_rule("/auth/register", view_func=register_user, methods=['POST'])
+auth.add_url_rule("/auth/login", view_func=login, methods=['POST'])
