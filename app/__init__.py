@@ -13,5 +13,8 @@ def create_app(configuration="development"):
 
     # register blueprints
     from app.endpoints.authentication.views import auth
+    from app.endpoints.shoppinglist.views import list_blueprint
+
     app.register_blueprint(auth)
+    app.register_blueprint(list_blueprint)
     return app
