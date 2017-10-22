@@ -145,6 +145,27 @@ class ShoppingListByID(MethodView):
             "message": message
         }), status_code
 
+    def delete(self, list_id):
+        user_id, message, status, status_code, _ = parse_auth_header(request)
+        if user_id is None:
+            return jsonify({
+                "status": status,
+                "message": message
+            }), status_code
+
+        shoppinglist, message, status, status_code = self.get_shoppinglist(
+            user_id, list_id)
+        if shoppinglist and shoppinglist.delete():
+            return jsonify({
+                "status": status,
+                "message": f"shopping list with ID {list_id} deleted successfully"
+            }), status_code
+
+        return jsonify({
+            "status": status,
+            "message": message
+        }), status_code
+
 
 shopping_list_api = ShoppingListAPI.as_view("shopping_list_api")
 shopping_list_by_id = ShoppingListByID.as_view("shopping_list_by_id")
@@ -152,4 +173,4 @@ shopping_list_by_id = ShoppingListByID.as_view("shopping_list_by_id")
 list_blueprint.add_url_rule(
     "/shoppinglists", view_func=shopping_list_api, methods=['POST', 'GET'])
 list_blueprint.add_url_rule(
-    "/shoppinglists/<list_id>", view_func=shopping_list_by_id, methods=['GET'])
+    "/shoppinglists/<list_id>", view_func=shopping_list_by_id, methods=['GET', 'DELETE'])
