@@ -10,6 +10,7 @@ class BaseTests(unittest.TestCase):
         self.app_context.push()
         db.drop_all()
         db.create_all()
+        self.user_data = dict(email="testor@example.com", password="!0ctoPus")
 
     def tearDown(self):
         db.session.remove()
