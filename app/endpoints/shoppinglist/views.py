@@ -106,6 +106,50 @@ class ShoppingListAPI(MethodView):
         }), 200
 
 
-shopping_api = ShoppingListAPI.as_view("shopping_api")
+class ShoppingListByID(MethodView):
+    def get_shoppinglist(self, user_id, list_id):
+        try:
+            list_id = int(list_id)
+            shoppinglist = ShoppingList.query.filter(
+                ShoppingList.user_id == user_id).filter(ShoppingList.id == list_id).first()
+            if shoppinglist:
+                return shoppinglist, None, "success", 200
+            status = "failure"
+            message = "shopping list with that ID cannot be found!"
+            status_code = 404
+            return None, message, status, status_code
+        except ValueError:
+            status = "failure"
+            status_code = 400
+            message = "shopping list IDs must be integers"
+            return None, message, status, status_code
+
+    def get(self, list_id):
+        user_id, message, status, status_code, _ = parse_auth_header(request)
+        if user_id is None:
+            return jsonify({
+                "status": status,
+                "message": message
+            }), status_code
+
+        shoppinglist, message, status, status_code = self.get_shoppinglist(
+            user_id, list_id)
+        if shoppinglist:
+            return jsonify({
+                "id": shoppinglist.id,
+                "name": shoppinglist.name,
+                "notify date": shoppinglist.notify_date.strftime("%Y-%m-%d"),
+            }), status_code
+        return jsonify({
+            "status": status,
+            "message": message
+        }), status_code
+
+
+shopping_list_api = ShoppingListAPI.as_view("shopping_list_api")
+shopping_list_by_id = ShoppingListByID.as_view("shopping_list_by_id")
+
 list_blueprint.add_url_rule(
-    "/shoppinglists", view_func=shopping_api, methods=['POST', 'GET'])
+    "/shoppinglists", view_func=shopping_list_api, methods=['POST', 'GET'])
+list_blueprint.add_url_rule(
+    "/shoppinglists/<list_id>", view_func=shopping_list_by_id, methods=['GET'])
