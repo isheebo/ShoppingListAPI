@@ -166,6 +166,51 @@ class ShoppingListByID(MethodView):
             "message": message
         }), status_code
 
+    def put(self, list_id):
+        user_id, message, status, status_code, _ = parse_auth_header(request)
+        if user_id is None:
+            return jsonify({
+                "status": status,
+                "message": message
+            }), status_code
+
+        shoppinglist, message, status, status_code = self.get_shoppinglist(
+            user_id, list_id)
+        if shoppinglist:  # a shoppinglist with list_id exists in the databse
+            name = request.form.get("name")
+            if name:
+                name = name.lower()
+                name_already_exists = ShoppingList.query.filter(
+                    ShoppingList.user_id == user_id).filter(ShoppingList.name == name).all()
+
+                if name_already_exists:
+                    return jsonify({
+                        "status": "failure",
+                        "message": f"a shopping list with name '{name}' already exists"
+                    }), 409
+
+                shoppinglist.name = name
+                shoppinglist.date_modified = datetime.now()
+                shoppinglist.save()
+                return jsonify({
+                    "status": "success",
+                    "data": {
+                        "id": shoppinglist.id,
+                        "name": shoppinglist.name,
+                        "date modified": shoppinglist.date_modified,
+                        "notify date": shoppinglist.notify_date
+                    },
+                    "message": "shoppinglist has been successfully edited!"
+                }), 200
+            return jsonify({
+                "status": "failure",
+                "message": "'name' parameter is required to complete this request"
+            }), 400
+        return jsonify({
+            "status": status,
+            "message": message
+        }), status_code
+
 
 shopping_list_api = ShoppingListAPI.as_view("shopping_list_api")
 shopping_list_by_id = ShoppingListByID.as_view("shopping_list_by_id")
@@ -173,4 +218,4 @@ shopping_list_by_id = ShoppingListByID.as_view("shopping_list_by_id")
 list_blueprint.add_url_rule(
     "/shoppinglists", view_func=shopping_list_api, methods=['POST', 'GET'])
 list_blueprint.add_url_rule(
-    "/shoppinglists/<list_id>", view_func=shopping_list_by_id, methods=['GET', 'DELETE'])
+    "/shoppinglists/<list_id>", view_func=shopping_list_by_id, methods=['GET', 'DELETE', 'PUT'])
