@@ -204,12 +204,6 @@ class ItemsAPIByID(MethodView):
                         "message": "no changes were made to the item"
                     }), 200
 
-                # if i change the quantity from 3 to 2, it should save the item as
-                #  changed regardless of the name... that is
-                # if either (item.name != name) or (item.quantity != quantity) or
-                #  (item.has_been_bought != has_been_bought) or (item.price != price),
-                # then we should register the item as having been edited!
-
                 if name_already_exists:  # if name exists and it isn't the current name we are editing
                     return jsonify({
                         "status": 'failure',
