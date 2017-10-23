@@ -131,11 +131,13 @@ class ResetPassword(MethodView):
                                " letters, number and special character '(!@#$%^&*)'"
                 }), 400
 
-            password_hash = Bcrypt().generate_password_hash(password)
+            password_hash = Bcrypt().generate_password_hash(password).decode('utf-8')
+
+            # if the passwords are similar...
             if Bcrypt().check_password_hash(password_hash, confirm_password):
                 user = User.query.filter_by(email=email.lower()).first()
                 if user:
-                    user.password = password
+                    user.password = password_hash
                     user.save()
                     return jsonify({
                         "status": "success",

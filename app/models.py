@@ -52,7 +52,7 @@ class User(db.Model, BaseModel):
 
     def __init__(self, email, password):
         self.email = email
-        self.password = Bcrypt().generate_password_hash(password).decode()
+        self.password = Bcrypt().generate_password_hash(password).decode('utf-8')
 
     def validate_password(self, password):
         return Bcrypt().check_password_hash(self.password, password)
