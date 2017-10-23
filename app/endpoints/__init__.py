@@ -64,6 +64,7 @@ def get_item(user_id, list_id, item_id):
         message = "item with that ID cannot be found!"
         status_code = 404
         return None, message, status, status_code
+
     except ValueError:
         status = "failure"
         status_code = 400
