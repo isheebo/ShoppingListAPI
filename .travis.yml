@@ -1,0 +1,26 @@
+language: python
+python:
+  - 3.6.3
+
+services:
+  - postgresql
+
+before_install:
+  - export TEST_DATABASE_URL="postgresql://postgres@localhost/test_db"
+  - export APP_SETTINGS="testing"
+
+install:
+  - pip install -r requirements.txt
+  - pip install coverage
+  - pip install coveralls
+
+before_script:
+  - psql -c 'create database test_db;' -U postgres
+  - python manage.py db upgrade
+
+# command to run tests
+script:
+  - nosetests -v --rednose --with-coverage --cover-package=app
+
+after_success:
+  - coveralls
