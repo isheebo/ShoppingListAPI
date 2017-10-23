@@ -26,6 +26,9 @@ def parse_auth_header(request):
 
 
 def get_shoppinglist(user_id, list_id):
+    """Returns a shoppinglist specified by <list_id> if
+       the User specified by <user_id> has that list.
+    """
     try:
         list_id = int(list_id)
         shoppinglist = ShoppingList.query.filter(
