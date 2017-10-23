@@ -1,4 +1,4 @@
-from app.models import User
+from app.models import User, ShoppingList
 
 
 def parse_auth_header(request):
@@ -23,3 +23,21 @@ def parse_auth_header(request):
 
     message = "Authorization header must be set for a successful request"
     return None, message, "failure", 403, None  # Unauthorized
+
+
+def get_shoppinglist(user_id, list_id):
+    try:
+        list_id = int(list_id)
+        shoppinglist = ShoppingList.query.filter(
+            ShoppingList.user_id == user_id).filter(ShoppingList.id == list_id).first()
+        if shoppinglist:
+            return shoppinglist, None, "success", 200
+        status = "failure"
+        message = "shopping list with that ID cannot be found!"
+        status_code = 404
+        return None, message, status, status_code
+    except ValueError:
+        status = "failure"
+        status_code = 400
+        message = "shopping list IDs must be integers"
+        return None, message, status, status_code

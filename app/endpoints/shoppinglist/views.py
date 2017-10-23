@@ -2,7 +2,7 @@ from datetime import datetime
 from flask import Blueprint, request, jsonify
 from flask.views import MethodView
 
-from app.endpoints import parse_auth_header
+from app.endpoints import parse_auth_header, get_shoppinglist
 from app.models import ShoppingList
 
 list_blueprint = Blueprint("list_blueprint", __name__, url_prefix="/api/v1")
@@ -107,23 +107,6 @@ class ShoppingListAPI(MethodView):
 
 
 class ShoppingListByID(MethodView):
-    def get_shoppinglist(self, user_id, list_id):
-        try:
-            list_id = int(list_id)
-            shoppinglist = ShoppingList.query.filter(
-                ShoppingList.user_id == user_id).filter(ShoppingList.id == list_id).first()
-            if shoppinglist:
-                return shoppinglist, None, "success", 200
-            status = "failure"
-            message = "shopping list with that ID cannot be found!"
-            status_code = 404
-            return None, message, status, status_code
-        except ValueError:
-            status = "failure"
-            status_code = 400
-            message = "shopping list IDs must be integers"
-            return None, message, status, status_code
-
     def get(self, list_id):
         user_id, message, status, status_code, _ = parse_auth_header(request)
         if user_id is None:
@@ -132,7 +115,7 @@ class ShoppingListByID(MethodView):
                 "message": message
             }), status_code
 
-        shoppinglist, message, status, status_code = self.get_shoppinglist(
+        shoppinglist, message, status, status_code = get_shoppinglist(
             user_id, list_id)
         if shoppinglist:
             return jsonify({
@@ -153,7 +136,7 @@ class ShoppingListByID(MethodView):
                 "message": message
             }), status_code
 
-        shoppinglist, message, status, status_code = self.get_shoppinglist(
+        shoppinglist, message, status, status_code = get_shoppinglist(
             user_id, list_id)
         if shoppinglist and shoppinglist.delete():
             return jsonify({
@@ -174,7 +157,8 @@ class ShoppingListByID(MethodView):
                 "message": message
             }), status_code
 
-        shoppinglist, message, status, status_code = self.get_shoppinglist(user_id, list_id)
+        shoppinglist, message, status, status_code = get_shoppinglist(
+            user_id, list_id)
         if shoppinglist:  # a shoppinglist with list_id exists in the database
             name = request.form.get("name")
             if name:
