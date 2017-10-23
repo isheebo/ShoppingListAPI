@@ -36,7 +36,7 @@ class TestItemsAPI(BaseTests):
         self.assertEqual(data["status"], "success")
 
         # add item to the shoppinglist 'groceries'
-        resp = self.test_client.post("/api/v1/shoppinglists/1", data=dict(
+        resp = self.test_client.post("/api/v1/shoppinglists/1/items", data=dict(
             name="beans", price='3,500/=', quantity='1 kg'), headers=dict(Authorization=f'Bearer {token}'))
         self.assertEqual(resp.status_code, 201)
         data = json.loads(resp.data)
@@ -44,7 +44,7 @@ class TestItemsAPI(BaseTests):
         self.assertEqual(data['status'], 'success')
 
     def test_post_item_fails_if_item_with_that_name_already_exists(self):
-                # Register a User
+        # Register a User
         resp = self.test_client.post(
             "/api/v1/auth/register", data=self.user_data)
         self.assertEqual(resp.status_code, 201)
@@ -73,7 +73,7 @@ class TestItemsAPI(BaseTests):
         self.assertEqual(data["status"], "success")
 
         # add beans to the shoppinglist 'groceries'
-        resp = self.test_client.post("/api/v1/shoppinglists/1", data=dict(
+        resp = self.test_client.post("/api/v1/shoppinglists/1/items", data=dict(
             name="beans", price='3,500/=', quantity='1 kg'), headers=dict(Authorization=f'Bearer {token}'))
         self.assertEqual(resp.status_code, 201)
         data = json.loads(resp.data)
@@ -81,7 +81,7 @@ class TestItemsAPI(BaseTests):
         self.assertEqual(data['status'], 'success')
 
         # try re-adding 'beans' to the groceries shoppinglist
-        resp = self.test_client.post("/api/v1/shoppinglists/1", data=dict(
+        resp = self.test_client.post("/api/v1/shoppinglists/1/items", data=dict(
             name="beans", price='3,500/=', quantity='1 kg'), headers=dict(Authorization=f'Bearer {token}'))
         self.assertEqual(resp.status_code, 409)  # No conflicts allowed
         data = json.loads(resp.data)
@@ -119,7 +119,7 @@ class TestItemsAPI(BaseTests):
         self.assertEqual(data["status"], "success")
 
         # try adding 'beans' to 'groceries' with out specifying its quantity
-        resp = self.test_client.post("/api/v1/shoppinglists/1", data=dict(  # quantity not given
+        resp = self.test_client.post("/api/v1/shoppinglists/1/items", data=dict(  # quantity not given
             name="beans", price='3,500/='), headers=dict(Authorization=f'Bearer {token}'))
         self.assertEqual(resp.status_code, 400)
         data = json.loads(resp.data)
@@ -128,7 +128,7 @@ class TestItemsAPI(BaseTests):
         self.assertEqual(data['status'], 'failure')
 
     def test_post_item_fails_if_the_given_list_id_is_not_an_integer(self):
-                # Register a User
+        # Register a User
         resp = self.test_client.post(
             "/api/v1/auth/register", data=self.user_data)
         self.assertEqual(resp.status_code, 201)
@@ -157,7 +157,7 @@ class TestItemsAPI(BaseTests):
         self.assertEqual(data["status"], "success")
 
         # use a URL with a string ID `testing`
-        resp = self.test_client.post("/api/v1/shoppinglists/testing", data=dict(
+        resp = self.test_client.post("/api/v1/shoppinglists/testing/items", data=dict(
             name="beans", price='3,500/=', quantity='1 kg'), headers=dict(Authorization=f'Bearer {token}'))
         self.assertEqual(resp.status_code, 400)
         data = json.loads(resp.data)
@@ -194,7 +194,7 @@ class TestItemsAPI(BaseTests):
         self.assertEqual(data["status"], "success")
 
         # try adding to a non-existent ID
-        resp = self.test_client.post("/api/v1/shoppinglists/100", data=dict(
+        resp = self.test_client.post("/api/v1/shoppinglists/100/items", data=dict(
             name="beans", price='3,500/=', quantity='1 kg'), headers=dict(Authorization=f'Bearer {token}'))
         self.assertEqual(resp.status_code, 404)
         data = json.loads(resp.data)
@@ -203,7 +203,7 @@ class TestItemsAPI(BaseTests):
             data['message'], "shopping list with that ID cannot be found!")
 
     def test_post_item_fails_if_authorization_header_is_not_specified(self):
-        resp = self.test_client.post("/api/v1/shoppinglists/1", data=dict(
+        resp = self.test_client.post("/api/v1/shoppinglists/1/items", data=dict(
             name="beans", price='3,500/=', quantity='1 kg'))
         self.assertEqual(resp.status_code, 403)
         data = json.loads(resp.data)
@@ -241,7 +241,7 @@ class TestItemsAPI(BaseTests):
         self.assertEqual(data["status"], "success")
 
         # add item to the shoppinglist 'groceries'
-        resp = self.test_client.post("/api/v1/shoppinglists/1", data=dict(
+        resp = self.test_client.post("/api/v1/shoppinglists/1/items", data=dict(
             name="beans", price='3,500/=', quantity='1 kg'), headers=dict(Authorization=f'Bearers {token}'))
         self.assertEqual(resp.status_code, 403)
         data = json.loads(resp.data)
