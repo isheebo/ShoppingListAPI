@@ -107,7 +107,8 @@ class ShoppingListAPI(MethodView):
 
 
 class ShoppingListByID(MethodView):
-    def get(self, list_id):
+    @staticmethod
+    def get(list_id):
         user_id, message, status, status_code, _ = parse_auth_header(request)
         if user_id is None:
             return jsonify({
@@ -128,7 +129,8 @@ class ShoppingListByID(MethodView):
             "message": message
         }), status_code
 
-    def delete(self, list_id):
+    @staticmethod
+    def delete(list_id):
         user_id, message, status, status_code, _ = parse_auth_header(request)
         if user_id is None:
             return jsonify({
@@ -149,7 +151,8 @@ class ShoppingListByID(MethodView):
             "message": message
         }), status_code
 
-    def put(self, list_id):
+    @staticmethod
+    def put(list_id):
         user_id, message, status, status_code, _ = parse_auth_header(request)
         if user_id is None:
             return jsonify({
