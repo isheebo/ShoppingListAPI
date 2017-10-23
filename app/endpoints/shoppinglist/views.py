@@ -174,16 +174,21 @@ class ShoppingListByID(MethodView):
                 "message": message
             }), status_code
 
-        shoppinglist, message, status, status_code = self.get_shoppinglist(
-            user_id, list_id)
-        if shoppinglist:  # a shoppinglist with list_id exists in the databse
+        shoppinglist, message, status, status_code = self.get_shoppinglist(user_id, list_id)
+        if shoppinglist:  # a shoppinglist with list_id exists in the database
             name = request.form.get("name")
             if name:
                 name = name.lower()
-                name_already_exists = ShoppingList.query.filter(
-                    ShoppingList.user_id == user_id).filter(ShoppingList.name == name).all()
+                name_already_exists = ShoppingList.query.filter(ShoppingList.user_id == user_id).filter((
+                    (ShoppingList.name == name) & (ShoppingList.id != list_id))).all()
 
-                if name_already_exists:
+                if shoppinglist.name == name:
+                    return jsonify({
+                        "status": "failure",
+                        "message": "No changes were made to the list"
+                    }), 200
+
+                if name_already_exists:  # if name already exists and is not the current shopping list name, then do:-
                     return jsonify({
                         "status": "failure",
                         "message": f"a shopping list with name '{name}' already exists"
