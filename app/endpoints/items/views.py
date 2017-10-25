@@ -118,15 +118,15 @@ class ItemsAPI(MethodView):
                     return jsonify({
                         "status": "success",
                         "matched items": list_items,
-                        "previous url": previous,
-                        "next url": next_
+                        "previous page": previous,
+                        "next page": next_
                     }), 200
 
                 return jsonify({
                     "status": "success",
                     "items": list_items,
-                    "previous url": previous,
-                    "next url": next_
+                    "previous page": previous,
+                    "next page": next_
                 }), 200
 
             if q is not None:

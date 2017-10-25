@@ -457,8 +457,9 @@ class TestShoppingListAPI(BaseTests):
 
         self.assertEqual(data['lists'][0]['name'], 'groceries')
         self.assertEqual(data['lists'][0]['id'], 1)
-        self.assertEqual(data['lists'][0]['current page'], 1)
-        self.assertEqual(data['lists'][0]['total number of pages'], 3)
+        self.assertIsNone(data['previous page'])
+        self.assertEqual(data['next page'],
+                         '/api/v1/shoppinglists?page=2&limit=1')
 
         # Getting the user's shopping lists for page 2
         resp = self.test_client.get(
@@ -471,8 +472,10 @@ class TestShoppingListAPI(BaseTests):
 
         self.assertEqual(data['lists'][0]['name'], 'furniture')
         self.assertEqual(data['lists'][0]['id'], 2)
-        self.assertEqual(data['lists'][0]['current page'], 2)
-        self.assertEqual(data['lists'][0]['total number of pages'], 3)
+        self.assertEqual(data['previous page'],
+                         '/api/v1/shoppinglists?page=1&limit=1')
+        self.assertEqual(data['next page'],
+                         '/api/v1/shoppinglists?page=3&limit=1')
 
     def test_get_shoppinglist_paginates_output_for_queried_URLs(self):
         # Register a User
@@ -532,8 +535,9 @@ class TestShoppingListAPI(BaseTests):
 
         self.assertEqual(data['matched lists'][0]['name'], 'groceries')
         self.assertEqual(data['matched lists'][0]['id'], 1)
-        self.assertEqual(data['matched lists'][0]['current page'], 1)
-        self.assertEqual(data['matched lists'][0]['total number of pages'], 2)
+        self.assertIsNone(data['previous page'])
+        self.assertEqual(data['next page'],
+                         '/api/v1/shoppinglists?page=2&limit=1&q=r')
 
         # Getting the user's shopping lists for page 2
         resp = self.test_client.get(
@@ -546,8 +550,9 @@ class TestShoppingListAPI(BaseTests):
 
         self.assertEqual(data['matched lists'][0]['name'], 'furniture')
         self.assertEqual(data['matched lists'][0]['id'], 2)
-        self.assertEqual(data['matched lists'][0]['current page'], 2)
-        self.assertEqual(data['matched lists'][0]['total number of pages'], 2)
+        self.assertIsNone(data['next page'])
+        self.assertEqual(data['previous page'],
+                         '/api/v1/shoppinglists?page=1&limit=1&q=r')
 
 
 class TestShoppingListByID(BaseTests):
