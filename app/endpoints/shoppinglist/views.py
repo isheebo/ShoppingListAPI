@@ -71,29 +71,39 @@ class ShoppingListAPI(MethodView):
             query_object = query_object.filter(ShoppingList.name.like(
                 '%' + q.strip().lower() + '%'))
 
-        pagination_object = query_object.paginate(
+        pg_object = query_object.paginate(
             page=page, per_page=per_page, error_out=False)
 
+        next_ = None
+        if pg_object.has_next:
+            next_ = "/api/v1/shoppinglists?page={0}{1}{2}".format(
+                pg_object.next_num, '' if per_page == 20 else f'&limit= {per_page}', '' if q is None else f'&q={q}')
+        previous = None
+        if pg_object.has_prev:
+            previous = "/api/v1/shoppinglists?page={0}{1}{2}".format(
+                pg_object.next_num, '' if per_page == 20 else f'&limit= {per_page}', '' if q is None else f'&q={q}')
         shoppinglists = []
-        for shoppinglist in pagination_object.items:
+        for shoppinglist in pg_object.items:
             shoppinglists.append({
                 "id": shoppinglist.id,
                 "name": shoppinglist.name,
                 "date created": shoppinglist.date_created.strftime("%Y-%m-%d %H:%M:%S"),
                 "notify date": shoppinglist.notify_date.strftime("%Y-%m-%d"),
-                "date modified": shoppinglist.date_modified.strftime("%Y-%m-%d %H:%M:%S"),
-                "current page": page,
-                "total number of pages": pagination_object.pages
+                "date modified": shoppinglist.date_modified.strftime("%Y-%m-%d %H:%M:%S")
             })
         if shoppinglists:
             if q is not None:
                 return jsonify({
                     "status": "success",
-                    "matched lists": shoppinglists
+                    "matched lists": shoppinglists,
+                    "next page": next_,
+                    "previous page": previous
                 }), 200
             return jsonify({
                 "status": "success",
-                "lists": shoppinglists
+                "lists": shoppinglists,
+                "next page": next_,
+                "previous page": previous
             }), 200
         if q is not None:
             return jsonify({
