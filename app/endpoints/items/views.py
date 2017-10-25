@@ -85,41 +85,61 @@ class ItemsAPI(MethodView):
                 query_object = query_object.filter(
                     Item.name.like('%' + q.strip().lower() + '%'))
 
-            pagination_object = query_object.paginate(
+            pg_object = query_object.paginate(
                 page=page, per_page=per_page, error_out=False)
 
+            next_ = None
+            if pg_object.has_next:
+                next_ = "/api/v1/shoppinglists/{0}/items?page={1}{2}{3}".format(
+                    list_id, pg_object.next_num, '' if per_page == 20 else f'&limit={per_page}',
+                    '' if q is None else f'&q={q}')
+
+            previous = None
+            if pg_object.has_prev:
+                previous = "/api/v1/shoppinglists/{0}/items?page={1}{2}{3}".format(
+                    list_id, pg_object.prev_num, '' if per_page == 20 else f'&limit={per_page}',
+                    '' if q is None else f'&q={q}')
+
             list_items = []
-            for item in pagination_object.items:
-                list_items.append({
-                    "id": item.id,
-                    "name": item.name,
-                    "price": item.price,
-                    "quantity": item.quantity,
-                    "has been bought": item.has_been_bought,
-                    "date modified": item.date_modified.strftime("%Y-%m-%d %H:%M:%S"),
-                    "current page": page,
-                    "total number of pages": pagination_object.pages
-                })
+            for item in pg_object.items:
+                list_items.append(
+                    {
+                        "id": item.id,
+                        "name": item.name,
+                        "price": item.price,
+                        "quantity": item.quantity,
+                        "has been bought": item.has_been_bought,
+                        "date modified": item.date_modified.strftime("%Y-%m-%d %H:%M:%S")
+                    }
+                )
 
             if list_items:
                 if q is not None:
                     return jsonify({
                         "status": "success",
-                        "matched items": list_items
+                        "matched items": list_items,
+                        "previous url": previous,
+                        "next url": next_
                     }), 200
+
                 return jsonify({
                     "status": "success",
-                    "items": list_items
+                    "items": list_items,
+                    "previous url": previous,
+                    "next url": next_
                 }), 200
+
             if q is not None:
                 return jsonify({
                     "status": "success",
                     "message": "your query did not match any items"
                 }), 200
+
             return jsonify({
                 "status": 'success',
                 "message": 'no items on this list'
             }), 200
+
         return jsonify({
             "status": status,
             "message": message

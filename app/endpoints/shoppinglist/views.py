@@ -77,11 +77,13 @@ class ShoppingListAPI(MethodView):
         next_ = None
         if pg_object.has_next:
             next_ = "/api/v1/shoppinglists?page={0}{1}{2}".format(
-                pg_object.next_num, '' if per_page == 20 else f'&limit= {per_page}', '' if q is None else f'&q={q}')
+                pg_object.next_num, '' if per_page == 20 else f'&limit={per_page}', '' if q is None else f'&q={q}')
+
         previous = None
         if pg_object.has_prev:
             previous = "/api/v1/shoppinglists?page={0}{1}{2}".format(
-                pg_object.next_num, '' if per_page == 20 else f'&limit= {per_page}', '' if q is None else f'&q={q}')
+                pg_object.prev_num, '' if per_page == 20 else f'&limit={per_page}', '' if q is None else f'&q={q}')
+
         shoppinglists = []
         for shoppinglist in pg_object.items:
             shoppinglists.append({
@@ -91,6 +93,7 @@ class ShoppingListAPI(MethodView):
                 "notify date": shoppinglist.notify_date.strftime("%Y-%m-%d"),
                 "date modified": shoppinglist.date_modified.strftime("%Y-%m-%d %H:%M:%S")
             })
+
         if shoppinglists:
             if q is not None:
                 return jsonify({
@@ -99,17 +102,20 @@ class ShoppingListAPI(MethodView):
                     "next page": next_,
                     "previous page": previous
                 }), 200
+
             return jsonify({
                 "status": "success",
                 "lists": shoppinglists,
                 "next page": next_,
                 "previous page": previous
             }), 200
+
         if q is not None:
             return jsonify({
                 "status": "success",
                 "message": "your query did not match any shopping lists"
             }), 200
+
         return jsonify({
             "status": "success",
             "message": "No shoppinglists found!"
