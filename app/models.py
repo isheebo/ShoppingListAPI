@@ -60,8 +60,8 @@ class User(db.Model, BaseModel):
     @staticmethod
     def generate_token(user_id):
         try:
-            payload = dict(iat=datetime.now(),
-                           exp=(datetime.now() +
+            payload = dict(iat=datetime.utcnow(),
+                           exp=(datetime.utcnow() +
                                 timedelta(seconds=current_app.config['AUTH_EXPIRY_TIME_IN_SECONDS'])),
                            sub=user_id)
             return jwt.encode(payload=payload, key=current_app.config['SECRET_KEY'], algorithm='HS256')
