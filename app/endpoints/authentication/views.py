@@ -39,13 +39,10 @@ class RegisterUser(MethodView):
                     "message": f"user with email '{email}' already exists"
                 }), 409  # Conflict
 
-            # Password validation: a valid password contains 6-8 characters,
-            # must contain a number, a 'Aa'letters and special characters
-            if not re.match(r"^(?=.*[\d])(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*])[\w!@#$%^&*]{8,}$", password):
+            if len(password) < 6:  # 6 is the minimum expected password length
                 return jsonify({
                     "status": "failure",
-                    "message": "password must be 8 or more characters and should consist atleast one lower, uppercase"
-                               " letters, number and special character '(!@#$%^&*)'"
+                    "message": "password must have a minimum of 6 characters"
                 }), 400
             user = User(email, password)
             if user.save():
@@ -122,13 +119,10 @@ class ResetPassword(MethodView):
         password = request.form.get("password")
         confirm_password = request.form.get("confirm password")
         if email and password and confirm_password:
-            # Password validation: a valid password contains 6-8 characters,
-            # must contain a number, a 'Aa'letters and special characters
-            if not re.match(r"^(?=.*[\d])(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*])[\w!@#$%^&*]{8,}$", password):
+            if len(password) < 6:  # 6 is the minimum expected password length
                 return jsonify({
                     "status": "failure",
-                    "message": "password must be 8 or more characters and should consist atleast one lower, uppercase"
-                               " letters, number and special character '(!@#$%^&*)'"
+                    "message": "password must have a minimum of 6 characters"
                 }), 400
 
             password_hash = Bcrypt().generate_password_hash(password).decode('utf-8')
