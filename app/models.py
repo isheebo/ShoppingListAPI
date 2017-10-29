@@ -72,12 +72,16 @@ class User(db.Model, BaseModel):
     def verify_token(token):
         try:
             if BlacklistToken.is_blacklisted(token):
-                return None, "token has already expired"
+                return None, "token has already expired: please re-login"
             payload = jwt.decode(
                 token, key=current_app.config['SECRET_KEY'], algorithms=['HS256', 'HS512'])
             return payload['sub'], None
-        except (jwt.DecodeError, jwt.InvalidAlgorithmError, jwt.ExpiredSignature, jwt.MissingRequiredClaimError) as err:
-            return None, err
+
+        except (jwt.DecodeError):
+            return None, "failed to decode the given token"
+
+        except jwt.ExpiredSignatureError:
+            return None, "the token has expired: please re-login"
 
 
 class BlacklistToken(db.Model, BaseModel):
