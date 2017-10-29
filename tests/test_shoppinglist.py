@@ -102,7 +102,7 @@ class TestShoppingListAPI(BaseTests):
         data = json.loads(resp.data)
         self.assertEqual(data["status"], "failure")
         self.assertEqual(
-            data["message"], 'error in token: Signature verification failed')
+            data["message"], 'failed to decode the given token')
 
     def test_post_shopping_list_fails_if_that_list_already_exists(self):
         # Registering a user
@@ -398,7 +398,7 @@ class TestShoppingListAPI(BaseTests):
         data = json.loads(resp.data)
         self.assertEqual(data["status"], "failure")
         self.assertEqual(
-            data["message"], 'error in token: Signature verification failed')
+            data["message"], 'failed to decode the given token')
 
     def test_get_shoppinglists_paginates_output(self):
         # Register a User

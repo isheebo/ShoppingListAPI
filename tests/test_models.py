@@ -57,7 +57,7 @@ class TestModels(unittest.TestCase):
         BlacklistToken(str(token)).save()
         user_id, err = user.verify_token(token)
         self.assertIsNotNone(err)
-        self.assertEqual(err, 'token has already expired')
+        self.assertEqual(err, 'token has already expired: please re-login')
         self.assertIsNone(user_id)
 
     def test_token_is_successfully_blacklisted(self):

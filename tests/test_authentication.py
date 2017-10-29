@@ -244,7 +244,7 @@ class TestLogout(BaseTests):
 
         self.assertEqual(data["status"], "failure")
         self.assertEqual(
-            data["message"], 'error in token: Signature verification failed')
+            data["message"], 'failed to decode the given token')
 
         # for a token with an invalid/corrupted header
         resp = self.test_client.post("/api/v1/auth/logout",
@@ -254,8 +254,7 @@ class TestLogout(BaseTests):
 
         self.assertEqual(data["status"], "failure")
         self.assertEqual(
-            data["message"], "error in token: Invalid header string: 'utf-8' codec "
-            "can't decode byte 0x97 in position 2: invalid start byte")
+            data["message"], "failed to decode the given token")
 
         # for a token with an invalid/corrupted payload
         resp = self.test_client.post("/api/v1/auth/logout",
@@ -265,7 +264,7 @@ class TestLogout(BaseTests):
 
         self.assertEqual(data["status"], "failure")
         self.assertEqual(
-            data["message"], "error in token: Invalid payload padding")
+            data["message"], "failed to decode the given token")
 
     def test_logout_fails_if_an_already_blacklisted_token_is_used(self):
         # Register a User
@@ -304,7 +303,7 @@ class TestLogout(BaseTests):
         data = json.loads(resp.data)
         self.assertEqual(data["status"], "failure")
         self.assertEqual(
-            data["message"], 'error in token: token has already expired')
+            data["message"], 'token has already expired: please re-login')
 
 
 class TestResetPassword(BaseTests):
