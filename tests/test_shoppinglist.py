@@ -1,4 +1,5 @@
 import json
+import time
 from tests import BaseTests
 
 
@@ -33,6 +34,37 @@ class TestShoppingListAPI(BaseTests):
         data = json.loads(resp.data)
         self.assertEqual(data["message"], "'groceries' successfully created")
         self.assertEqual(data["status"], "success")
+
+    def test_post_shopping_list_fails_if_token_has_already_expired(self):
+        # Register a User
+        resp = self.test_client.post(
+            "/api/v1/auth/register", data=self.user_data)
+        self.assertEqual(resp.status_code, 201)
+        data = json.loads(resp.data)
+        self.assertEqual(
+            data["message"], "user with email 'testor@example.com' has been registered")
+        self.assertEqual(data["status"], "success")
+
+        # Login a User
+
+        resp = self.test_client.post("/api/v1/auth/login", data=self.user_data)
+        self.assertEqual(resp.status_code, 200)
+        data = json.loads(resp.data)
+        self.assertEqual(
+            data["message"], "Login successful for 'testor@example.com'")
+        self.assertEqual(data["status"], "success")
+        self.assertIsNotNone(data["token"])
+
+        time.sleep(12)  # enough time for the token to expire in testing mode.
+
+        # try adding a shoppinglist.
+        resp = self.test_client.post("/api/v1/shoppinglists", data=dict(
+            name="groceries"), headers=dict(Authorization=f'Bearer {data["token"]}'))
+        self.assertEqual(resp.status_code, 401)
+
+        data = json.loads(resp.data)
+        self.assertEqual(
+            data['message'], "the token has expired: please re-login")
 
     def test_post_shopping_list_fails_if_no_authorization_header_is_specified(self):
         resp = self.test_client.post(

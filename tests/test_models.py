@@ -1,5 +1,4 @@
 import unittest
-import time
 from datetime import datetime
 from app import create_app, db
 from app.models import BaseModel, User, BlacklistToken, ShoppingList, Item
