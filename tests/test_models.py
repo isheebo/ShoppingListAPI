@@ -1,7 +1,7 @@
 import unittest
 from datetime import datetime
 from app import create_app, db
-from app.models import BaseModel, User, BlacklistToken, ShoppingList, Item
+from app.models import User, BlacklistToken, ShoppingList, Item
 
 
 class TestModels(unittest.TestCase):

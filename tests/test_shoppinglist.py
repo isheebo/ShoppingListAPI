@@ -4,9 +4,6 @@ from tests import BaseTests
 
 
 class TestShoppingListAPI(BaseTests):
-    def setUp(self):
-        super(TestShoppingListAPI, self).setUp()
-
     def test_post_shopping_list_is_successful_if_all_requirements_are_given(self):
         # Register a User
         resp = self.test_client.post(

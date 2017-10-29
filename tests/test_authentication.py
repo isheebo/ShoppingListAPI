@@ -3,9 +3,6 @@ from tests import BaseTests
 
 
 class TestRegisterUserAPI(BaseTests):
-    def setUp(self):
-        super(TestRegisterUserAPI, self).setUp()
-
     def test_user_is_successfully_registered_given_the_right_email_password(self):
         resp = self.test_client.post(
             "/api/v1/auth/register", data=self.user_data)
@@ -60,8 +57,6 @@ class TestRegisterUserAPI(BaseTests):
 
 
 class TestLogin(BaseTests):
-    def setUp(self):
-        super(TestLogin, self).setUp()
 
     def test_login_is_successful_for_existing_email_and_password(self):
         # Register a User
@@ -143,8 +138,6 @@ class TestLogin(BaseTests):
 
 
 class TestLogout(BaseTests):
-    def setUp(self):
-        super(TestLogout, self).setUp()
 
     def test_logout_is_successful_for_a_logged_in_user(self):
         # Register a User
@@ -307,9 +300,6 @@ class TestLogout(BaseTests):
 
 
 class TestResetPassword(BaseTests):
-    def setUp(self):
-        super(TestResetPassword, self).setUp()
-
     def test_reset_password_is_successful_for_an_existing_email(self):
         # Register a User
         resp = self.test_client.post(

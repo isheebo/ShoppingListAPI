@@ -77,7 +77,7 @@ class User(db.Model, BaseModel):
                 token, key=current_app.config['SECRET_KEY'], algorithms=['HS256', 'HS512'])
             return payload['sub'], None
 
-        except (jwt.DecodeError):
+        except jwt.DecodeError:
             return None, "failed to decode the given token"
 
         except jwt.ExpiredSignatureError:
