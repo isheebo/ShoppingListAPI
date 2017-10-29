@@ -51,12 +51,11 @@ class TestRegisterUserAPI(BaseTests):
 
     def test_registration_fails_if_user_has_a_weak_password(self):
         resp = self.test_client.post(
-            "/api/v1/auth/register", data=dict(email='testor@example.com', password="squ3@ler"))
+            "/api/v1/auth/register", data=dict(email='testor@example.com', password="sq33r"))
         self.assertEqual(resp.status_code, 400)
         data = json.loads(resp.data)
         self.assertEqual(
-            data["message"], "password must be 8 or more characters and should consist atleast one lower, uppercase "
-            "letters, number and special character '(!@#$%^&*)'")
+            data["message"], "password must have a minimum of 6 characters")
         self.assertEqual(data["status"], "failure")
 
 
@@ -355,14 +354,13 @@ class TestResetPassword(BaseTests):
 
     def test_reset_password_fails_if_password_has_less_than_8_characters_or_has_more_but_poorly_formatted(self):
         resp = self.test_client.post("/api/v1/auth/reset-password",
-                                     data={'password': 'testing', 'confirm password': 'testing',
+                                     data={'password': 'ten0R', 'confirm password': 'ten0R',
                                            'email': 'testor@example.com'})
         self.assertEqual(resp.status_code, 400)
         data = json.loads(resp.data)
         self.assertEqual(data["status"], "failure")
         self.assertEqual(
-            data["message"], "password must be 8 or more characters and should consist atleast one lower,"
-            " uppercase letters, number and special character '(!@#$%^&*)'")
+            data["message"], "password must have a minimum of 6 characters")
 
     def test_reset_password_fails_if_none_or_one_of_the_fields_are_not_given(self):
         # reset password for `testor@example.com`
