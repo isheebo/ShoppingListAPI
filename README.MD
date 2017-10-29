@@ -39,7 +39,7 @@ $ cd ShoppingListAPI
 $ pip install -r requirements.txt
 ```
 ### Database Setup
-* [PostgreSQL](https://postgresql.org/download/) is utilised on the backend. If you have it installed, use the `pgAdmin` utility to create databases `ShoppingList` and `ShoppingListTest`. (feel free to use other names).
+* [PostgreSQL](https://postgresql.org/download/) is utilised on the backend. If you have it installed, use the `pgAdmin` utility to create databases `ShoppingList` and `ShoppingListTest`. *(feel free to use the database names of your choice).*
 * Change the `SQLALCHEMY_DATABASE_URL` in `config.py` to reflect the URLs of your databases.
 * To check if you have properly set up your databases, run
 ```
