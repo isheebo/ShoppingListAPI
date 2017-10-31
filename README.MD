@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/isheebo/ShoppingListAPI.svg?branch=master)](https://travis-ci.org/isheebo/ShoppingListAPI)
+
 # ShoppingList API
 This project was done so as to improve on the code readability and test coverage of [ShoppingListerAPI](https://github.com/isheebo/shoppinglisterapi).
 
