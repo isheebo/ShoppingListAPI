@@ -1,0 +1,759 @@
+FORMAT: 1A
+HOST: https://shoppinglisterapi.herokuapp.com
+
+# ShoppingListAPI
+
+ShoppingList is an API allowing a user to keep track of their shopping needs.
+Users can get started by creating an user account with us and everything 
+thereafter is just seamless.
+
+## User Registration [/auth/register]
+To successfully, register a user, check to ensure that 
+the format of your email is correct and that your password
+consists 6 or more characters.
+### Register a User [POST]
+
++ Request (application/json)
+
+    + Body
+    
+        {
+            "email": "testing@example.com",
+            "password": "testing123"
+        }
+    
++ Response 201 (application/json)
+
+        {
+            "message": "user with email 'testing@example.com' has been registered",
+            "status": "success"
+        }
+
++ Response 400 (application/json)
+
+        {
+            "message": "invalid email format",
+            "status": "failure"
+        }
+
++ Response 400 (application/json)
+
+        {
+            "message": "password must have a minimum of 6 characters",
+            "status": "failure"
+        }
+
+
++ Response 409 (application/json)
+
+        {
+            "message": "user with email 'testing@example.com' already exists",
+            "status": "failure"
+        }
+
+
++ Response 400 (application/json)
+
+        {
+            "message": "you need to enter both the email and the password",
+            "status": "failure"
+        }
+
+## User Login [/auth/login]
+On Successful login, an authentication token is generated and 
+returned in the response. This should be used with all other requests
+that are to be made by the user. Otherwise, none will be successful.
+
+### Login a User [POST]
+
++ Request (application/json)
+
+        + Body
+            
+            {
+                "email": "testing@example.com",
+                "password": "testing123"
+            }
+    
++ Response 200 (application/json)
+
+        {
+            "message": "Login successful for 'testing@example.com'",
+            "status": "success"
+            "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1MDkzNDgwOTgsImV4cCI6MTUwOTM1MTY5OCwic3ViIjozfQ.wkbGRYLsK2rvWHSjw7w5k61yyAnhekbE9XiU4B0DMlY"
+        }
+        
++ Response 400 (application/json)
+
+        {
+            "message": "invalid email format",
+            "status": "failure"
+        }
+
+        
++ Response 403 (application/json)
+
+        {
+            "message": "Wrong password for the given email address"",
+            "status": "failure"
+        }
+        
++ Response 403 (application/json)
+
+        {
+            "message": "user with email 'dgje@dhj.com' doesn't exist",
+            "status": "failure"
+        }
+
++ Response 400 (application/json)
+
+        {
+            "message": "you need to enter both the email and the password",
+            "status": "failure"
+        }
+
+## User Logout [/auth/logout]
+To log out a logged in user, the authentication token generated on login is
+sent via the Authorization Header. If the token is still valid, the token
+is invalidated and the user is then logged out.
+### Log Out a User [POST]
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: Bearer JWT Token
+
++ Response 200 (application/json)
+
+        {
+            "message": "Successfully logged out 'testing@example.com'",
+            "status": "success"
+        }
+
+
+
++ Response 401 (application/json)
+
+        {
+            "message": "the token has expired: please re-login",
+            "status": "failure"
+        }
+
++ Response 401 (application/json)
+
+        {
+            "message": "failed to decode the given token",
+            "status": "failure"
+        }
+        
++ Response 401 (application/json)
+
+        {
+            "message": "Authorization header must be set for a successful request",
+            "status": "failure"
+        }
+
++ Response 401 (application/json)
+
+        {
+            "message": "Authorization header must be set for a successful request",
+            "status": "failure"
+        }
+
++ Response 403 (application/json)
+
+        {
+            "message": "Authentication Header is poorly formatted. The acceptable format is `Bearer <jwt_token>`",
+            "status": "failure"
+        }
+        
+## Reset User's Password [/auth/reset-password]
+For this request to be successful, the characters entered in
+the 'password' field must match the characters entered in the 
+'confirm password' field and must both contain 6 or more characters.
+
+The email must also be registered and known.
+### Reset a Registered User's Password [POST]
+
++ Request (application/json)
+
+        {
+            "email": "testing@example.com",
+            "password": "testing123",
+            "confirm password": "testing123"
+        }
+
+
++ Response 200 (application/json)
+
+        {
+            "message": "password reset successful for 'testing@example.com'",
+            "status": "success"
+        }
+
++ Response 400 (application/json)
+
+        {
+            "message": "the fields: email, password, and 'confirm password' are required",
+            "status": "failure"
+        }
+        
++ Response 403 (application/json)
+
+        {
+            "message": "user with email `testing@example.com` not found!",
+            "status": "failure"
+        }
+
++ Response 403 (application/json)
+
+        {
+            "message": "the given passwords don't match",
+            "status": "failure"
+        }
+
++ Response 400 (application/json)
+
+        {
+            "status": "failure",
+            "message": "password must have a minimum of 6 characters"
+        }
+
+
+## ShoppingLists [/shoppinglists{?page}{?q}{?limit}]
+
+In here, a user can create a shoppinglist, edit and delete it.
+To a created shoppinglist, items can be added,edited and deleted.
+
++ Parameters
+    + page(optional, number, `1`) - The page number to view
+    + q(optional, string) - Search query
+    + limit(optional, int) - Number of items to view on a page
+
+
+### Create a ShoppingList [POST]
+Adds a new shoppinglist to the logged in user account.
+    + name (required, string) -  Name of the ShoppingList
+    + requires Authorization
+    
++ Request (application/json)
+        + Headers
+        
+                Authorization: Bearer JWT Token
+                
+        + Body
+
+                {
+                    "name": "groceries"
+                }
+                
++ Response 201 (application/json)
+
+        {
+            "message": "'groceries' successfully created",
+            "status": "success"
+        }
+
++ Response 400 (application/json)
+
+        {
+            "message": "'name' of the shoppinglist is a required field",
+            "status": "failure"
+        }
+
++ Response 409 (application/json)
+
+        {
+        
+            "message": "a shopping list with name 'groceries' already exists",
+            "status": "failure"
+        }
+
+
+### View ShoppingLists [GET]
++ Request (application/json)
+
+    + Headers
+
+            Authorization: Bearer JWT Token
+
+
++ Response 200 (application/json)
+
+            {
+                "lists": [
+                            {
+                                "date created": "2017-10-30 09:08:33",
+                                "date modified": "2017-10-30 09:08:33",
+                                "id": 6,
+                                "name": "groceries",
+                                "notify date": "2017-10-30"
+                            },
+                            {
+                                "date created": "2017-10-30 09:08:33",
+                                "date modified": "2017-10-30 09:08:33",
+                                "id": 7,
+                                "name": "furniture",
+                                "notify date": "2017-10-30"
+                            },
+                            {
+                                "date created": "2017-10-30 09:08:33",
+                                "date modified": "2017-10-30 09:08:33",
+                                "id": 8,
+                                "name": "cars",
+                                "notify date": "2017-10-30"
+                            },
+                        ],
+                "next page": null,
+                "previous page": null,
+                "status": "success"
+            }
+
++ Response 200(application/json)
+
+        {
+            "message": "No shoppinglists found!",
+            "status": "success"
+        }
+        
++ Response 200 (application/json)
+
+        {
+            "lists": [
+                        {
+                            "date created": "2017-10-30 09:08:33",
+                            "date modified": "2017-10-30 09:08:33",
+                            "id": 7,
+                            "name": "furniture",
+                            "notify date": "2017-10-30"
+                        }
+                    ],
+            "next page": "/api/v1/shoppinglists?page=3&limit=1",
+            "previous page": "/api/v1/shoppinglists?page=1&limit=1",
+            "status": "success"
+        }
+
++ Response 200 (application/json)
+
+        {
+            "matched lists": [
+                {
+                    "date created": "2017-10-30 09:08:33",
+                    "date modified": "2017-10-30 09:08:33",
+                    "id": 6,
+                    "name": "groceries",
+                    "notify date": "2017-10-30"
+                },
+                {
+                    "date created": "2017-10-30 09:08:33",
+                    "date modified": "2017-10-30 09:08:33",
+                    "id": 10,
+                    "name": "bricks",
+                    "notify date": "2017-10-30"
+                }
+            ],
+            "next page": null,
+            "previous page": null,
+            "status": "success"
+        }
+
++ Response 200 (application/json)
+
+        {
+            "matched lists": [
+                {
+                    "date created": "2017-10-30 09:08:33",
+                    "date modified": "2017-10-30 09:08:33",
+                    "id": 6,
+                    "name": "groceries",
+                    "notify date": "2017-10-30"
+                }
+            ],
+            "next page": "/api/v1/shoppinglists?page=2&limit=1&q=ri",
+            "previous page": null,
+            "status": "success"
+        }
+
++ Response 200 (application/json)
+
+        {
+            "status": "success",
+            "message": "your query did not match any shopping lists"
+        }
+
+## ShoppingList [/shoppinglists/{shoppinglist_id}]
++ Parameters
+    + shoppinglist_id (required, number) - Integer id of the ShoppingList to be viewed
+
+### View a ShoppingList [GET]
++ Request (application/json)
+
+    + Headers
+
+            Authorization: Bearer JWT Token
+
+
++ Response 200 (application/json)
+
+        {
+            "id": 6,
+            "name": "groceries",
+            "notify date": "2017-10-30"
+        }
+
++ Response 404 (application/json)
+
+        {
+            "message": "shopping list with that ID cannot be found!",
+            "status": "failure"
+        }
+
++ Response 400 (application/json)
+
+        {
+            "message": "shopping list IDs must be integers",
+            "status": "failure"
+        }
+
+### DELETE A SHOPPINGLIST [DELETE]
++ Request (application/json)
+
+    + Headers
+
+            Authorization: Bearer JWT Token
+
++ Response 200 (application/json)
+
+        {
+            "message": "shopping list with ID 10 deleted successfully",
+            "status": "success"
+        }
+        
++ Response 400 (application/json)
+
+        {
+            "message": "shopping list IDs must be integers",
+            "status": "failure"
+        }
+
++ Response 404 (application/json)
+
+        {
+            "message": "shopping list with that ID cannot be found!",
+            "status": "failure"
+        }
+
+
+### Edit a ShoppingList [PUT]
+
++ Request (application/json)
+
+    + Headers
+
+                Authorization: Bearer JWT Token
+                
+    + Body
+    
+            {
+                name: "books"
+            }
+
++ Response 200 (application/json)
+
+        {
+            "data": {
+            "date modified": "Mon, 30 Oct 2017 14:20:49 GMT",
+            "id": 7,
+            "name": "books",
+            "notify date": "Mon, 30 Oct 2017 09:08:33 GMT"
+            },
+            "message": "shoppinglist has been successfully edited!",
+            "status": "success"
+        }
+
++ Response 200 (application/json)
+
+        {
+            "message": "No changes were made to the list",
+            "status": "failure"
+        }
+
++ Response 409 (application/json)
+
+        {
+            "message": "a shopping list with name 'books' already exists",
+            "status": "failure"
+        }
+
+
++ Response 400 (application/json)
+
+        {
+            "message": "'name' parameter is required to complete this request",
+            "status": "failure"
+        }
+
+
+## ShoppingList Item Resources [/shoppinglists/{list_id}/items{?page}{?q}{?limit}]
+using the authentication token obtained at login, a user can add, delete and edit
+items on a created shoppinglist.
++ Parameters
+    + list_id (required, number) - ID of the shopping list
+    + page (optional, number, `1`) - page to view
+    + q (optional, string) - Search query string
+
+### Create a New ShoppingList Item [POST]
++ Request (application/json)
+
+    + Headers
+
+            Authorization: Bearer JWT Token
+    + Body
+    
+            {
+                "name": "cabbages",
+                "quantity": "20",
+                "price": "20,000/="
+            }
+
++ Response 201 (application/json)
+
+            {
+                "message": "'cabbages' has been added",
+                "status": "success"
+            }
+
++ Response 409 (application/json)
+
+            {
+                "message": "an item with name 'cabbages' already exists",
+                "status": "failure"
+            }
+            
++ Response 400 (application/json)
+
+            {
+                "message": "'name', 'price' and 'quantity' of an item must be specified whereas 'status' is optional",
+                "status": "failure"
+            }
+
+
+### View Items On a ShoppingList [GET]
++ Request (application/json)
+
+    + Headers
+
+            Authorization: Bearer JWT Token
+
++ Response 200 (application/json)
+
+        {
+            "items": [
+                {
+                    "date modified": "2017-10-30 10:34:39",
+                    "has been bought": true,
+                    "id": 1,
+                    "name": "cabbages",
+                    "price": "3,000/=",
+                    "quantity": "2"
+                },
+                {
+                    "date modified": "2017-10-30 10:34:39",
+                    "has been bought": false,
+                    "id": 2,
+                    "name": "carrots",
+                    "price": "2,000/=",
+                    "quantity": "10"
+                },
+            ],
+            "next page": null,
+            "previous page": null,
+            "status": "success"
+        }
+
++ Response 200 (application/json)
+
+        {
+            "matched items": [
+                {
+                    "date modified": "2017-10-30 10:34:39",
+                    "has been bought": false,
+                    "id": 1,
+                    "name": "cabbages",
+                    "price": "3,000/=",
+                    "quantity": "2"
+                },
+                {
+                    "date modified": "2017-10-30 10:34:39",
+                    "has been bought": false,
+                    "id": 2,
+                    "name": "carrots",
+                    "price": "2,000/=",
+                    "quantity": "10"
+                }
+            ],
+            "next page": null,
+            "previous page": null,
+            "status": "success"
+        }
+
++ Response 200 (application/json)
+
+        {
+            "message": "no items on this list",
+            "status": "success"
+        }
+
++ Response 200 (application/json)
+
+        {
+            "message": "your query did not match any items",
+            "status": "success"
+        }
+
++ Response 404 (application/json)
+
+        {
+            "message": "shopping list with that ID cannot be found!",
+            "status": "failure"
+        }
+
++ Response 400 (application/json)
+
+        {
+            "message": "shopping list IDs must be integers",
+            "status": "failure"
+        }
+
+## ITEM BY ID RESOURCES [/shoppinglists/{list_id}/items/{item_id}]
++ Parameters
+
+    + list_id (required, number) - ID of the shopping list
+    + item_id (required, number) - ID of the item on the shopping list
+
+### View a ShoppingList Item [GET]
++ Request (application/json)
+
+    + Headers
+
+            Authorization: Bearer JWT Token
+
++ Response 200 (application/json)
+
+        {
+            "date modified": "2017-10-30 14:36:05",
+            "has been bought": true,
+            "id": 4,
+            "name": "pineapples",
+            "price": "8,000/=",
+            "quantity": "10"
+        }
+
++ Response 404 (application/json)
+
+        {
+            "message": "item with that ID cannot be found!",
+            "status": "failure"
+        }
+
++ Response 400 (application/json)
+
+        {
+            "message": "item IDs must be integers",
+            "status": "failure"
+        }
+
+### Delete a ShoppingList Item [DELETE]
++ Request (application/json)
+
+    + Headers
+
+            Authorization: Bearer JWT Token
+
++ Response 200 (application/json)
+
+        {
+            "message": "an item with ID 1 has been successfully deleted",
+            "status": "success"
+        }
+
++ Response 404 (application/json)
+
+        {
+            "message": "item with that ID cannot be found!",
+            "status": "failure"
+        }
+
++ Response 400 (application/json)
+
+        {
+            "message": "item IDs must be integers",
+            "status": "failure"
+        }
+
++ Response 404 (application/json)
+
+        {
+            "message": "shopping list with that ID cannot be found!",
+            "status": "failure"
+        }
+
++ Response 400 (application/json)
+
+        {
+            "message": "shopping list IDs must be integers",
+            "status": "failure"
+        }
+
+### Edit ShoppingList Item [PUT]
++ Request (application/json)
+
+    + Headers
+
+            Authorization: Bearer JWT Token
+
+    + Body
+    
+            {
+                "name": "pineapples",
+                "quantity": '3',
+                "price" : "4,500/=",
+                "status": true
+            }
+
++ Response 409 (application/json)
+
+            {
+                "message": "an item with name 'pineapples' already exists",
+                "status": "failure"
+            }
+
++ Response 400 (application/json)
+
+            {
+                "message": "'name', 'price' and 'quantity' of an item must be specified whereas 'status' is optional",
+                "status": "failure"
+            }
+
++ Response 200 (application/json)
+
+            {
+                "message": "no changes were made to the item",
+                "status": "failure"
+            }
+
++ Response 200 (application/json)
+
+            {
+                "data": {
+                    "date modified": "Mon, 30 Oct 2017 15:01:22 GMT",
+                    "has been bought": true,
+                    "id": 3,
+                    "name": "pineapples",
+                    "price": "4,500/=",
+                    "quantity": "3"
+                },
+                "message": "item has been updated successfully",
+                "status": "success"
+            }
