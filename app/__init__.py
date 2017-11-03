@@ -15,10 +15,12 @@ def create_app(configuration="development"):
     from app.endpoints.authentication.views import auth
     from app.endpoints.shoppinglist.views import list_blueprint
     from app.endpoints.items.views import items
+    from app.docs.views import apiary
 
     app.register_blueprint(auth)
     app.register_blueprint(list_blueprint)
     app.register_blueprint(items)
+    app.register_blueprint(apiary)
 
     @app.errorhandler(405)
     def method_not_allowed(_):
