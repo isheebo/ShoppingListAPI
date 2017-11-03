@@ -4,11 +4,11 @@ HOST: https://shoppinglisterapi.herokuapp.com
 # ShoppingListAPI
 
 ShoppingList is an API allowing a user to keep track of their shopping needs.
-Users can get started by creating an user account with us and everything 
+Users can get started by creating an user account with us and everything
 thereafter is just seamless.
 
 ## User Registration [/auth/register]
-To successfully, register a user, check to ensure that 
+To successfully, register a user, check to ensure that
 the format of your email is correct and that your password
 consists 6 or more characters.
 ### Register a User [POST]
@@ -16,12 +16,12 @@ consists 6 or more characters.
 + Request (application/json)
 
     + Body
-    
+
         {
             "email": "testing@example.com",
             "password": "testing123"
         }
-    
+
 + Response 201 (application/json)
 
         {
@@ -60,7 +60,7 @@ consists 6 or more characters.
         }
 
 ## User Login [/auth/login]
-On Successful login, an authentication token is generated and 
+On Successful login, an authentication token is generated and
 returned in the response. This should be used with all other requests
 that are to be made by the user. Otherwise, none will be successful.
 
@@ -69,12 +69,12 @@ that are to be made by the user. Otherwise, none will be successful.
 + Request (application/json)
 
         + Body
-            
+
             {
                 "email": "testing@example.com",
                 "password": "testing123"
             }
-    
+
 + Response 200 (application/json)
 
         {
@@ -82,7 +82,7 @@ that are to be made by the user. Otherwise, none will be successful.
             "status": "success"
             "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1MDkzNDgwOTgsImV4cCI6MTUwOTM1MTY5OCwic3ViIjozfQ.wkbGRYLsK2rvWHSjw7w5k61yyAnhekbE9XiU4B0DMlY"
         }
-        
+
 + Response 400 (application/json)
 
         {
@@ -90,14 +90,14 @@ that are to be made by the user. Otherwise, none will be successful.
             "status": "failure"
         }
 
-        
+
 + Response 403 (application/json)
 
         {
-            "message": "Wrong password for the given email address"",
+            "message": "Wrong password for the given email address",
             "status": "failure"
         }
-        
+
 + Response 403 (application/json)
 
         {
@@ -146,7 +146,7 @@ is invalidated and the user is then logged out.
             "message": "failed to decode the given token",
             "status": "failure"
         }
-        
+
 + Response 401 (application/json)
 
         {
@@ -167,10 +167,10 @@ is invalidated and the user is then logged out.
             "message": "Authentication Header is poorly formatted. The acceptable format is `Bearer <jwt_token>`",
             "status": "failure"
         }
-        
+
 ## Reset User's Password [/auth/reset-password]
 For this request to be successful, the characters entered in
-the 'password' field must match the characters entered in the 
+the 'password' field must match the characters entered in the
 'confirm password' field and must both contain 6 or more characters.
 
 The email must also be registered and known.
@@ -198,7 +198,7 @@ The email must also be registered and known.
             "message": "the fields: email, password, and 'confirm password' are required",
             "status": "failure"
         }
-        
+
 + Response 403 (application/json)
 
         {
@@ -236,18 +236,18 @@ To a created shoppinglist, items can be added,edited and deleted.
 Adds a new shoppinglist to the logged in user account.
     + name (required, string) -  Name of the ShoppingList
     + requires Authorization
-    
+
 + Request (application/json)
         + Headers
-        
+
                 Authorization: Bearer JWT Token
-                
+
         + Body
 
                 {
                     "name": "groceries"
                 }
-                
+
 + Response 201 (application/json)
 
         {
@@ -265,7 +265,7 @@ Adds a new shoppinglist to the logged in user account.
 + Response 409 (application/json)
 
         {
-        
+
             "message": "a shopping list with name 'groceries' already exists",
             "status": "failure"
         }
@@ -316,7 +316,7 @@ Adds a new shoppinglist to the logged in user account.
             "message": "No shoppinglists found!",
             "status": "success"
         }
-        
+
 + Response 200 (application/json)
 
         {
@@ -429,7 +429,7 @@ Adds a new shoppinglist to the logged in user account.
             "message": "shopping list with ID 10 deleted successfully",
             "status": "success"
         }
-        
+
 + Response 400 (application/json)
 
         {
@@ -452,9 +452,9 @@ Adds a new shoppinglist to the logged in user account.
     + Headers
 
                 Authorization: Bearer JWT Token
-                
+
     + Body
-    
+
             {
                 name: "books"
             }
@@ -510,7 +510,7 @@ items on a created shoppinglist.
 
             Authorization: Bearer JWT Token
     + Body
-    
+
             {
                 "name": "cabbages",
                 "quantity": "20",
@@ -530,7 +530,7 @@ items on a created shoppinglist.
                 "message": "an item with name 'cabbages' already exists",
                 "status": "failure"
             }
-            
+
 + Response 400 (application/json)
 
             {
@@ -714,7 +714,7 @@ items on a created shoppinglist.
             Authorization: Bearer JWT Token
 
     + Body
-    
+
             {
                 "name": "pineapples",
                 "quantity": '3',
