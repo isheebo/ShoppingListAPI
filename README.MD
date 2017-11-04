@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/isheebo/ShoppingListAPI.svg?branch=master)](https://travis-ci.org/isheebo/ShoppingListAPI)
+[![Build Status](https://travis-ci.org/isheebo/ShoppingListAPI.svg?branch=master)](https://travis-ci.org/isheebo/ShoppingListAPI)  [![Coverage Status](https://coveralls.io/repos/github/isheebo/ShoppingListAPI/badge.svg?branch=master)](https://coveralls.io/github/isheebo/ShoppingListAPI?branch=master)
 
 # ShoppingList API
 This project was done so as to improve on the code readability and test coverage of [ShoppingListerAPI](https://github.com/isheebo/shoppinglisterapi).
