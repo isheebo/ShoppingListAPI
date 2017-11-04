@@ -7,7 +7,7 @@ class BaseConfig:
     TESTING = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = secrets.token_hex(32)  # random string
-    AUTH_EXPIRY_TIME_IN_SECONDS = 3600  # 1 hour for the token to expire
+    AUTH_EXPIRY_TIME_IN_SECONDS = 86400  # token can last a day before it expires
 
 
 class TestingConfig(BaseConfig):
