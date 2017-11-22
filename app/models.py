@@ -21,7 +21,6 @@ class BaseModel:
             db.session.commit()
             has_been_saved = True
         except (RuntimeError, psycopg2.Error) as err:
-            print("ERROR: {}".format(err))  # for debugging purposes only
             db.session.rollback()
         return has_been_saved
 
@@ -34,7 +33,6 @@ class BaseModel:
             db.session.commit()
             is_deleted = True
         except (RuntimeError, psycopg2.Error) as err:
-            print("ERROR: {}".format(err))  # for debugging purposes
             db.session.rollback()
         return is_deleted
 
