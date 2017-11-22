@@ -70,7 +70,7 @@ class ItemsAPI(MethodView):
             user_id, list_id)
         if shoppinglist:
             # the query parameters for items
-            q = request.args.get('q', None, type=str)
+            search_query = request.args.get('q', None, type=str)
             page = request.args.get('page', 1, type=int)
             per_page = request.args.get('limit', 10, type=int)
             if per_page and per_page > 20:
@@ -81,24 +81,25 @@ class ItemsAPI(MethodView):
                 page = 1
 
             query_object = Item.query.filter(Item.shoppinglist_id == list_id)
-            if q is not None:
+            if search_query is not None:
                 query_object = query_object.filter(
-                    Item.name.like('%' + q.strip().lower() + '%'))
+                    Item.name.like('%' + search_query.strip().lower() + '%'))
 
+            # pg_object refers to the pagination object obtained
             pg_object = query_object.paginate(
                 page=page, per_page=per_page, error_out=False)
 
-            next_ = None
+            next_page = None
             if pg_object.has_next:
-                next_ = "/api/v1/shoppinglists/{0}/items?page={1}{2}{3}".format(
+                next_page = "/api/v1/shoppinglists/{0}/items?page={1}{2}{3}".format(
                     list_id, pg_object.next_num, '' if per_page == 20 else f'&limit={per_page}',
-                    '' if q is None else f'&q={q}')
+                    '' if search_query is None else f'&q={search_query}')
 
-            previous = None
+            previous_page = None
             if pg_object.has_prev:
-                previous = "/api/v1/shoppinglists/{0}/items?page={1}{2}{3}".format(
+                previous_page = "/api/v1/shoppinglists/{0}/items?page={1}{2}{3}".format(
                     list_id, pg_object.prev_num, '' if per_page == 20 else f'&limit={per_page}',
-                    '' if q is None else f'&q={q}')
+                    '' if search_query is None else f'&q={search_query}')
 
             list_items = []
             for item in pg_object.items:
@@ -114,22 +115,22 @@ class ItemsAPI(MethodView):
                 )
 
             if list_items:
-                if q is not None:
+                if search_query is not None:
                     return jsonify({
                         "status": "success",
                         "matched items": list_items,
-                        "previous page": previous,
-                        "next page": next_
+                        "previous page": previous_page,
+                        "next page": next_page
                     }), 200
 
                 return jsonify({
                     "status": "success",
                     "items": list_items,
-                    "previous page": previous,
-                    "next page": next_
+                    "previous page": previous_page,
+                    "next page": next_page
                 }), 200
 
-            if q is not None:
+            if search_query is not None:
                 return jsonify({
                     "status": "success",
                     "message": "your query did not match any items"
