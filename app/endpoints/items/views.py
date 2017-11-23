@@ -28,9 +28,13 @@ class ItemsAPI(MethodView):
             quantity = request.form.get("quantity")
             status = request.form.get("status")
 
-            has_been_bought = True if status and status.title() == "True" else False
-            if name and price and quantity:
-                name = name.strip().lower()
+            has_been_bought = True if status and status.strip().title() == "True" else False
+            name = name.strip() if name else ""
+            price = price.strip() if price else ""
+            quantity = quantity.strip() if quantity else ""
+
+            if name.strip and price and quantity:
+                name = name.lower()
 
                 name_already_exists = Item.query.filter(
                     Item.shoppinglist_id == list_id).filter(Item.name == name).all()
@@ -212,9 +216,14 @@ class ItemsAPIByID(MethodView):
             quantity = request.form.get("quantity")
             status = request.form.get("status")
 
-            has_been_bought = True if status and status.title() == "True" else False
+            has_been_bought = True if status and status.strip().title() == "True" else False
+
+            name = name.strip() if name else ""
+            price = price.strip() if price else ""
+            quantity = quantity.strip() if quantity else ""
+
             if name and price and quantity:
-                name = name.strip().lower()
+                name = name.lower()
                 name_already_exists = Item.query.filter(Item.shoppinglist_id == list_id).filter((
                     (Item.name == name) & (Item.id != item_id))).all()
 

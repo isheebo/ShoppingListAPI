@@ -19,9 +19,13 @@ class ShoppingListAPI(MethodView):
                 "message": message
             }), status_code
 
+        # prevents errors due to empty string names
         name = request.form.get("name")
+
+        name = name.strip() if name else ""
+
         if name:
-            name = name.strip().lower()
+            name = name.lower()
             name_already_exists = ShoppingList.query.filter(
                 ShoppingList.user_id == user_id).filter(ShoppingList.name == name).all()
             if name_already_exists:
@@ -181,6 +185,8 @@ class ShoppingListByID(MethodView):
             user_id, list_id)
         if shoppinglist:  # a shoppinglist with list_id exists in the database
             name = request.form.get("name")
+
+            name = name.strip() if name else ""
             if name:
                 name = name.lower()
                 name_already_exists = ShoppingList.query.filter(ShoppingList.user_id == user_id).filter((
