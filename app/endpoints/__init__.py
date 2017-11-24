@@ -8,7 +8,7 @@ def parse_auth_header(request):
     """
     auth_header = request.headers.get("Authorization")
     if auth_header:
-        # check if we have are using the JWT-Based Authentication mechanism
+        # check if we are using the JWT-Based Authentication mechanism
         if len(auth_header.split()) != 2 or (auth_header.split()[0]).title() != "Bearer":
             message = "Authentication Header is poorly formatted. The acceptable format is `Bearer <jwt_token>`"
             return None, message, "failure", 403, None  # Forbidden

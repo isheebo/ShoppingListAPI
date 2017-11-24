@@ -19,9 +19,13 @@ class ShoppingListAPI(MethodView):
                 "message": message
             }), status_code
 
+        # prevents errors due to empty string names
         name = request.form.get("name")
+
+        name = name.strip() if name else ""
+
         if name:
-            name = name.strip().lower()
+            name = name.lower()
             name_already_exists = ShoppingList.query.filter(
                 ShoppingList.user_id == user_id).filter(ShoppingList.name == name).all()
             if name_already_exists:
@@ -55,7 +59,7 @@ class ShoppingListAPI(MethodView):
             }), status_code
 
         # the query parameters
-        q = request.args.get('q', None, type=str)
+        search_query = request.args.get('q', None, type=str)
         page = request.args.get('page', 1, type=int)
         per_page = request.args.get('limit', 10, type=int)
         if per_page and per_page > 20:
@@ -67,22 +71,23 @@ class ShoppingListAPI(MethodView):
 
         query_object = ShoppingList.query.filter(
             ShoppingList.user_id == user_id)
-        if q is not None:
+        if search_query is not None:
             query_object = query_object.filter(ShoppingList.name.like(
-                '%' + q.strip().lower() + '%'))
+                '%' + search_query.strip().lower() + '%'))
 
+        # pg_object refers to the pagination object obtained
         pg_object = query_object.paginate(
             page=page, per_page=per_page, error_out=False)
 
-        next_ = None
+        next_page = None
         if pg_object.has_next:
-            next_ = "/api/v1/shoppinglists?page={0}{1}{2}".format(
-                pg_object.next_num, '' if per_page == 20 else f'&limit={per_page}', '' if q is None else f'&q={q}')
+            next_page = "/api/v1/shoppinglists?page={0}{1}{2}".format(
+                pg_object.next_num, '' if per_page == 20 else f'&limit={per_page}', '' if search_query is None else f'&q={search_query}')
 
-        previous = None
+        previous_page = None
         if pg_object.has_prev:
-            previous = "/api/v1/shoppinglists?page={0}{1}{2}".format(
-                pg_object.prev_num, '' if per_page == 20 else f'&limit={per_page}', '' if q is None else f'&q={q}')
+            previous_page = "/api/v1/shoppinglists?page={0}{1}{2}".format(
+                pg_object.prev_num, '' if per_page == 20 else f'&limit={per_page}', '' if search_query is None else f'&q={search_query}')
 
         shoppinglists = []
         for shoppinglist in pg_object.items:
@@ -95,22 +100,22 @@ class ShoppingListAPI(MethodView):
             })
 
         if shoppinglists:
-            if q is not None:
+            if search_query is not None:
                 return jsonify({
                     "status": "success",
                     "matched lists": shoppinglists,
-                    "next page": next_,
-                    "previous page": previous
+                    "next page": next_page,
+                    "previous page": previous_page
                 }), 200
 
             return jsonify({
                 "status": "success",
                 "lists": shoppinglists,
-                "next page": next_,
-                "previous page": previous
+                "next page": next_page,
+                "previous page": previous_page
             }), 200
 
-        if q is not None:
+        if search_query is not None:
             return jsonify({
                 "status": "success",
                 "message": "your query did not match any shopping lists"
@@ -180,6 +185,8 @@ class ShoppingListByID(MethodView):
             user_id, list_id)
         if shoppinglist:  # a shoppinglist with list_id exists in the database
             name = request.form.get("name")
+
+            name = name.strip() if name else ""
             if name:
                 name = name.lower()
                 name_already_exists = ShoppingList.query.filter(ShoppingList.user_id == user_id).filter((

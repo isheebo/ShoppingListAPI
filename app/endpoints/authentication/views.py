@@ -22,7 +22,7 @@ class RegisterUser(MethodView):
         email = request.form.get("email")
         password = request.form.get("password")
         if email and password:
-            email = email.lower()
+            email = email.lower().strip()
             # check if the email is of the right format
             if not is_valid_email(email):
                 return jsonify({
@@ -62,7 +62,7 @@ class Login(MethodView):
         email = request.form.get("email")
         password = request.form.get("password")
         if email and password:
-            email = email.lower()
+            email = email.lower().strip()
             if not is_valid_email(email):
                 return jsonify({
                     "status": "failure",
