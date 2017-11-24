@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/isheebo/ShoppingListAPI.svg?branch=master)](https://travis-ci.org/isheebo/ShoppingListAPI)  [![Coverage Status](https://coveralls.io/repos/github/isheebo/ShoppingListAPI/badge.svg?branch=master)](https://coveralls.io/github/isheebo/ShoppingListAPI?branch=master)
 
 # ShoppingList API
-This project was done so as to improve on the code readability and test coverage of [ShoppingListerAPI](https://github.com/isheebo/shoppinglisterapi).
+This project is hosted on Heroku. It can be accessed here https://shoppinglistapi1.herokuapp.com
 
 The ShoppingList API is a simple REST API built with Python and the Flask web application framework.
 
@@ -41,7 +41,7 @@ $ cd ShoppingListAPI
 $ pip install -r requirements.txt
 ```
 ### Database Setup
-* [PostgreSQL](https://postgresql.org/download/) is utilised on the backend. If you have it installed, use the `pgAdmin` utility to create databases `ShoppingList` and `ShoppingListTest`. *(feel free to use the database names of your choice).*
+* [PostgreSQL](https://postgresql.org/download/) is utilised on the backend. If you have it installed, use the `pgAdmin` utility (or the commandline) to create databases `ShoppingList` and `ShoppingListTest`. *(feel free to use the database names of your choice).*
 * Change the `SQLALCHEMY_DATABASE_URL` in `config.py` to reflect the URLs of your databases.
 * To check if you have properly set up your databases, run
 ```
@@ -52,7 +52,7 @@ $ python manage.py db upgrade
 
 ## Running the Application
 ```
- $ python manage.py runserver
+ $ python3 manage.py runserver
 ```
 
 This will start at server running at address http://127.0.0.1:5000 . Append any endpoints to the end of this URL (e.g. http://127.0.0.1:5000/api/v1/auth/register) so as to test them. I would recommend you use [Postman](https://www.getpostman.com) for testing.
