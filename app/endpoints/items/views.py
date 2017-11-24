@@ -33,7 +33,7 @@ class ItemsAPI(MethodView):
             price = price.strip() if price else ""
             quantity = quantity.strip() if quantity else ""
 
-            if name.strip and price and quantity:
+            if name and price and quantity:
                 name = name.lower()
 
                 name_already_exists = Item.query.filter(
