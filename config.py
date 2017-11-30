@@ -1,5 +1,6 @@
 import os
 import secrets
+import settings
 
 
 class BaseConfig:
@@ -15,12 +16,12 @@ class TestingConfig(BaseConfig):
     DEBUG = True
     AUTH_EXPIRY_TIME_IN_SECONDS = 3  # just 3 seconds and the token expires
     SQLALCHEMY_DATABASE_URI = os.getenv(
-        'TEST_DATABASE_URL', "postgresql://postgres:pumpkin@localhost:5432/ShoppingListTest")
+        'TEST_DATABASE_URL', settings.TEST_DATABASE_URL)
 
 
 class DevelopmentConfig(BaseConfig):
     SQLALCHEMY_DATABASE_URI = os.getenv(
-        'DATABASE_URL', "postgresql://postgres:pumpkin@localhost:5432/ShoppingList")
+        'DATABASE_URL', settings.DATABASE_URL)
     DEBUG = True
 
 

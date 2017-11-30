@@ -5,3 +5,4 @@ __pycache__
 .noseids
 .coverage
 .cache
+settings.py
