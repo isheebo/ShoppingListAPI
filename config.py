@@ -1,6 +1,10 @@
 import os
 import secrets
-import settings
+
+try:
+    import settings
+except ImportError:
+    pass
 
 
 class BaseConfig:
