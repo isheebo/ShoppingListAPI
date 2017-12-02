@@ -3,8 +3,11 @@ import secrets
 
 try:
     import settings
+    TEST_DATABASE_URL = settings.TEST_DATABASE_URL
+    DATABASE_URL = settings.DATABASE_URL
 except ImportError:
-    pass
+    TEST_DATABASE_URL = os.getenv('TEST_DATABASE_URL')
+    DATABASE_URL = os.getenv('DATABASE_URL')
 
 
 class BaseConfig:
@@ -19,13 +22,11 @@ class TestingConfig(BaseConfig):
     TESTING = True
     DEBUG = True
     AUTH_EXPIRY_TIME_IN_SECONDS = 3  # just 3 seconds and the token expires
-    SQLALCHEMY_DATABASE_URI = os.getenv(
-        'TEST_DATABASE_URL', settings.TEST_DATABASE_URL)
+    SQLALCHEMY_DATABASE_URI = TEST_DATABASE_URL
 
 
 class DevelopmentConfig(BaseConfig):
-    SQLALCHEMY_DATABASE_URI = os.getenv(
-        'DATABASE_URL', settings.DATABASE_URL)
+    SQLALCHEMY_DATABASE_URI = DATABASE_URL
     DEBUG = True
 
 
