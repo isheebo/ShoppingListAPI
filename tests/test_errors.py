@@ -6,7 +6,7 @@ class TestErrors(BaseTests):
     def setUp(self):
         super(TestErrors, self).setUp()
 
-    def test_405_errors_are_handles_gracefully(self):
+    def test_405_errors_are_handled_gracefully(self):
         resp = self.test_client.get("/api/v1/auth/login")
         self.assertEqual(resp.status_code, 405)
         data = json.loads(resp.data)
