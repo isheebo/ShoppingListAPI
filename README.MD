@@ -1,3 +1,4 @@
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/a6c6f4fde53b4be18654832b16905249)](https://www.codacy.com/app/isheebo/ShoppingListAPI?utm_source=github.com&utm_medium=referral&utm_content=isheebo/ShoppingListAPI&utm_campaign=badger)
 [![Build Status](https://travis-ci.org/isheebo/ShoppingListAPI.svg?branch=master)](https://travis-ci.org/isheebo/ShoppingListAPI)  [![Coverage Status](https://coveralls.io/repos/github/isheebo/ShoppingListAPI/badge.svg?branch=master)](https://coveralls.io/github/isheebo/ShoppingListAPI?branch=master)
 
 # ShoppingList API
