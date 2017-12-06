@@ -25,8 +25,10 @@ class TestShoppingListAPI(BaseTests):
         self.assertIsNotNone(data["token"])
 
         # Add a shoppinglist to a user
-        resp = self.test_client.post("/api/v1/shoppinglists", data=dict(
-            name="groceries"), headers=dict(Authorization=f'Bearer {data["token"]}'))
+        resp = self.test_client.post("/api/v1/shoppinglists",
+                                     data={"name": "groceries",
+                                           "notify date": "2018-03-14"},
+                                     headers=dict(Authorization=f'Bearer {data["token"]}'))
         self.assertEqual(resp.status_code, 201)
         data = json.loads(resp.data)
         self.assertEqual(data["message"], "'groceries' successfully created")
@@ -55,8 +57,10 @@ class TestShoppingListAPI(BaseTests):
         time.sleep(12)  # enough time for the token to expire in testing mode.
 
         # try adding a shoppinglist.
-        resp = self.test_client.post("/api/v1/shoppinglists", data=dict(
-            name="groceries"), headers=dict(Authorization=f'Bearer {data["token"]}'))
+        resp = self.test_client.post("/api/v1/shoppinglists", 
+                                     data={"name": "groceries",
+                                           "notify date": "2018-03-14"},
+                                     headers=dict(Authorization=f'Bearer {data["token"]}'))
         self.assertEqual(resp.status_code, 401)
 
         data = json.loads(resp.data)
@@ -99,7 +103,8 @@ class TestShoppingListAPI(BaseTests):
         data = json.loads(resp.data)
         self.assertEqual(data["status"], "failure")
         self.assertEqual(
-            data["message"], "Authentication Header is poorly formatted. The acceptable format is `Bearer <jwt_token>`")
+            data["message"], "Authentication Header is poorly formatted. "
+                             "The acceptable format is `Bearer <jwt_token>`")
 
     def test_post_shopping_list_fails_if_the_auth_token_has_expired_or_is_corrupted(self):
         # Register a User
@@ -122,11 +127,14 @@ class TestShoppingListAPI(BaseTests):
         self.assertIsNotNone(data["token"])
 
         invalid_token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1MDg2MTExNjgs" + \
-            "ImV4cCI6MTUwODYxNDc2OCwic3ViIjoyfQ.I_WBI93N3PRlAXOasnXJ5QY4Zg0ggvNXA4b2B2CQ9g0"
+                        "ImV4cCI6MTUwODYxNDc2OCwic3ViIjoyfQ.I_WBI93N3PRlAXOasnXJ5QY4Zg0ggvNXA4b2B2CQ9g0"
 
         # try adding a shoppinglist with an invalid token
         resp = self.test_client.post(
-            "/api/v1/shoppinglists", data=dict(name='groceries'), headers={"Authorization": f"Bearer {invalid_token}"})
+            "/api/v1/shoppinglists",
+            data={"name": "groceries",
+                  "notify date": "2018-03-14"},
+            headers={"Authorization": f"Bearer {invalid_token}"})
         self.assertEqual(resp.status_code, 401)
         data = json.loads(resp.data)
         self.assertEqual(data["status"], "failure")
@@ -155,16 +163,20 @@ class TestShoppingListAPI(BaseTests):
         token = data['token']
 
         # add 'groceries' to the user's shoppinglists
-        resp = self.test_client.post("/api/v1/shoppinglists", data=dict(
-            name='groceries'), headers={'Authorization': f"Bearer {data['token']}"})
+        resp = self.test_client.post("/api/v1/shoppinglists",
+                                     data={"name": "groceries",
+                                           "notify date": "2018-03-14"},
+                                     headers={'Authorization': f"Bearer {data['token']}"})
         self.assertEqual(resp.status_code, 201)
         data = json.loads(resp.data)
         self.assertEqual(data['status'], 'success')
         self.assertEqual(data['message'], "'groceries' successfully created")
 
         #  Try to add groceries once more. IT SHOULD FAIL!
-        resp = self.test_client.post("/api/v1/shoppinglists", data=dict(
-            name='groceries'), headers={'Authorization': f"Bearer {token}"})
+        resp = self.test_client.post("/api/v1/shoppinglists",
+                                     data={"name": "groceries",
+                                           "notify date": "2018-03-14"},
+                                     headers={'Authorization': f"Bearer {token}"})
         self.assertEqual(resp.status_code, 409)
         data = json.loads(resp.data)
         self.assertEqual(data['status'], 'failure')
@@ -197,7 +209,7 @@ class TestShoppingListAPI(BaseTests):
         data = json.loads(resp.data)
         self.assertEqual(data['status'], 'failure')
         self.assertEqual(
-            data['message'], "'name' of the shoppinglist is a required field")
+            data['message'], "'name' and 'notify date' of the shoppinglist are required fields")
 
     def test_get_shopping_list_is_successful_is_user_already_has_shoppinglists(self):
         # Register a User
@@ -222,16 +234,19 @@ class TestShoppingListAPI(BaseTests):
         token = data['token']
 
         # Add the first shoppinglist to a user
-        resp = self.test_client.post("/api/v1/shoppinglists", data=dict(
-            name="groceries"), headers=dict(Authorization=f'Bearer {token}'))
+        resp = self.test_client.post("/api/v1/shoppinglists", 
+                                     data={"name": "groceries", "notify date": "2018-03-14"},
+                                     headers=dict(Authorization=f'Bearer {token}'))
         self.assertEqual(resp.status_code, 201)
         data = json.loads(resp.data)
         self.assertEqual(data["message"], "'groceries' successfully created")
         self.assertEqual(data["status"], "success")
 
         # Add the second shopping list to the logged in user
-        resp = self.test_client.post("/api/v1/shoppinglists", data=dict(
-            name="furniture"), headers=dict(Authorization=f'Bearer {token}'))
+        resp = self.test_client.post("/api/v1/shoppinglists",
+                                     data={"name": "furniture",
+                                           "notify date": "2018-03-14"},
+                                     headers=dict(Authorization=f'Bearer {token}'))
         self.assertEqual(resp.status_code, 201)
         data = json.loads(resp.data)
         self.assertEqual(data["message"], "'furniture' successfully created")
@@ -304,16 +319,20 @@ class TestShoppingListAPI(BaseTests):
         token = data['token']
 
         # Add the first shoppinglist to a user
-        resp = self.test_client.post("/api/v1/shoppinglists", data=dict(
-            name="groceries"), headers=dict(Authorization=f'Bearer {token}'))
+        resp = self.test_client.post("/api/v1/shoppinglists", 
+                                     data={"name": "groceries",
+                                           "notify date": "2018-03-14"},
+                                     headers=dict(Authorization=f'Bearer {token}'))
         self.assertEqual(resp.status_code, 201)
         data = json.loads(resp.data)
         self.assertEqual(data["message"], "'groceries' successfully created")
         self.assertEqual(data["status"], "success")
 
         # Add the second shopping list to the logged in user
-        resp = self.test_client.post("/api/v1/shoppinglists", data=dict(
-            name="furniture"), headers=dict(Authorization=f'Bearer {token}'))
+        resp = self.test_client.post("/api/v1/shoppinglists",
+                                     data={"name": "furniture",
+                                           "notify date": "2018-03-14"},
+                                     headers=dict(Authorization=f'Bearer {token}'))
         self.assertEqual(resp.status_code, 201)
         data = json.loads(resp.data)
         self.assertEqual(data["message"], "'furniture' successfully created")
@@ -321,7 +340,8 @@ class TestShoppingListAPI(BaseTests):
 
         # Getting the user's shopping lists by query
         resp = self.test_client.get(
-            "/api/v1/shoppinglists?q=gr", headers=dict(Authorization=f'Bearer {token}'))
+            "/api/v1/shoppinglists?q=gr", 
+            headers=dict(Authorization=f'Bearer {token}'))
         self.assertEqual(resp.status_code, 200)
         data = json.loads(resp.data)
         self.assertEqual(data['status'], "success")
@@ -355,16 +375,20 @@ class TestShoppingListAPI(BaseTests):
         token = data['token']
 
         # Add the first shoppinglist to a user
-        resp = self.test_client.post("/api/v1/shoppinglists", data=dict(
-            name="groceries"), headers=dict(Authorization=f'Bearer {token}'))
+        resp = self.test_client.post("/api/v1/shoppinglists", 
+                                     data={"name": "groceries",
+                                           "notify date": "2018-03-14"},
+                                     headers=dict(Authorization=f'Bearer {token}'))
         self.assertEqual(resp.status_code, 201)
         data = json.loads(resp.data)
         self.assertEqual(data["message"], "'groceries' successfully created")
         self.assertEqual(data["status"], "success")
 
         # Add the second shopping list to the logged in user
-        resp = self.test_client.post("/api/v1/shoppinglists", data=dict(
-            name="furniture"), headers=dict(Authorization=f'Bearer {token}'))
+        resp = self.test_client.post("/api/v1/shoppinglists", 
+                                     data={"name": "furniture",
+                                           "notify date": "2018-05-10"},
+                                     headers=dict(Authorization=f'Bearer {token}'))
         self.assertEqual(resp.status_code, 201)
         data = json.loads(resp.data)
         self.assertEqual(data["message"], "'furniture' successfully created")
@@ -414,11 +438,14 @@ class TestShoppingListAPI(BaseTests):
         data = json.loads(resp.data)
         self.assertEqual(data["status"], "failure")
         self.assertEqual(
-            data["message"], "Authentication Header is poorly formatted. The acceptable format is `Bearer <jwt_token>`")
+            data["message"], "Authentication Header is poorly formatted. "
+                             "The acceptable format is `Bearer <jwt_token>`")
 
     def test_get_shopping_lists_with_an_invalid_or_corrupted_token(self):
-        invalid_token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1MDg2MTExNjgs" + \
-            "ImV4cCI6MTUwODYxNDc2OCwic3ViIjoyfQ.I_WBI93N3PRlAXOasnXJ5QY4Zg0ggvNXA4b2B2CQ9g0"
+        invalid_token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ" \
+                        "9.eyJpYXQiOjE1MDg2MTExNjgs" + \
+                        "ImV4cCI6MTUwODYxNDc2OCwic3ViIjoyfQ.I_W" \
+                        "BI93N3PRlAXOasnXJ5QY4Zg0ggvNXA4b2B2CQ9g0"
 
         # getting shoppinglists with an invalid token
         resp = self.test_client.get(
@@ -452,24 +479,30 @@ class TestShoppingListAPI(BaseTests):
         token = data['token']
 
         # Add the first shoppinglist to a user
-        resp = self.test_client.post("/api/v1/shoppinglists", data=dict(
-            name="groceries"), headers=dict(Authorization=f'Bearer {token}'))
+        resp = self.test_client.post("/api/v1/shoppinglists",
+                                     data={"name": "groceries",
+                                           "notify date": "2018-03-14"},
+                                     headers=dict(Authorization=f'Bearer {token}'))
         self.assertEqual(resp.status_code, 201)
         data = json.loads(resp.data)
         self.assertEqual(data["message"], "'groceries' successfully created")
         self.assertEqual(data["status"], "success")
 
         # Add the second shopping list to the logged in user
-        resp = self.test_client.post("/api/v1/shoppinglists", data=dict(
-            name="furniture"), headers=dict(Authorization=f'Bearer {token}'))
+        resp = self.test_client.post("/api/v1/shoppinglists",
+                                     data={"name": "furniture",
+                                           "notify date": "2018-05-24"},
+                                     headers=dict(Authorization=f'Bearer {token}'))
         self.assertEqual(resp.status_code, 201)
         data = json.loads(resp.data)
         self.assertEqual(data["message"], "'furniture' successfully created")
         self.assertEqual(data["status"], "success")
 
         # Add the third shoppinglist to the user
-        resp = self.test_client.post("/api/v1/shoppinglists", data=dict(
-            name="cars"), headers=dict(Authorization=f'Bearer {token}'))
+        resp = self.test_client.post("/api/v1/shoppinglists",
+                                     data={"name": "cars",
+                                           "notify date": "2018-07-14"},
+                                     headers=dict(Authorization=f'Bearer {token}'))
         self.assertEqual(resp.status_code, 201)
         data = json.loads(resp.data)
         self.assertEqual(data["message"], "'cars' successfully created")
@@ -477,7 +510,8 @@ class TestShoppingListAPI(BaseTests):
 
         # Getting the user's shopping lists for page 1
         resp = self.test_client.get(
-            "/api/v1/shoppinglists?limit=1&page=1", headers=dict(Authorization=f'Bearer {token}'))
+            "/api/v1/shoppinglists?limit=1&page=1",
+            headers=dict(Authorization=f'Bearer {token}'))
         self.assertEqual(resp.status_code, 200)
         data = json.loads(resp.data)
         self.assertEqual(data['status'], 'success')
@@ -492,7 +526,8 @@ class TestShoppingListAPI(BaseTests):
 
         # Getting the user's shopping lists for page 2
         resp = self.test_client.get(
-            "/api/v1/shoppinglists?limit=1&page=2", headers=dict(Authorization=f'Bearer {token}'))
+            "/api/v1/shoppinglists?limit=1&page=2",
+            headers=dict(Authorization=f'Bearer {token}'))
         self.assertEqual(resp.status_code, 200)
         data = json.loads(resp.data)
         self.assertEqual(data['status'], 'success')
@@ -529,24 +564,30 @@ class TestShoppingListAPI(BaseTests):
         token = data['token']
 
         # Add the first shoppinglist to a user
-        resp = self.test_client.post("/api/v1/shoppinglists", data=dict(
-            name="groceries"), headers=dict(Authorization=f'Bearer {token}'))
+        resp = self.test_client.post("/api/v1/shoppinglists",
+                                     data={"name": "groceries",
+                                           "notify date": "2018-03-14"},
+                                     headers=dict(Authorization=f'Bearer {token}'))
         self.assertEqual(resp.status_code, 201)
         data = json.loads(resp.data)
         self.assertEqual(data["message"], "'groceries' successfully created")
         self.assertEqual(data["status"], "success")
 
         # Add the second shopping list to the logged in user
-        resp = self.test_client.post("/api/v1/shoppinglists", data=dict(
-            name="furniture"), headers=dict(Authorization=f'Bearer {token}'))
+        resp = self.test_client.post("/api/v1/shoppinglists",
+                                     data={"name": "furniture",
+                                           "notify date": "2019-08-18"},
+                                     headers=dict(Authorization=f'Bearer {token}'))
         self.assertEqual(resp.status_code, 201)
         data = json.loads(resp.data)
         self.assertEqual(data["message"], "'furniture' successfully created")
         self.assertEqual(data["status"], "success")
 
         # Add the third shoppinglist to the user
-        resp = self.test_client.post("/api/v1/shoppinglists", data=dict(
-            name="books"), headers=dict(Authorization=f'Bearer {token}'))
+        resp = self.test_client.post("/api/v1/shoppinglists",
+                                     data={"name": "books",
+                                           "notify date": "2019-08-18"},
+                                     headers=dict(Authorization=f'Bearer {token}'))
         self.assertEqual(resp.status_code, 201)
         data = json.loads(resp.data)
         self.assertEqual(data["message"], "'books' successfully created")
@@ -554,7 +595,8 @@ class TestShoppingListAPI(BaseTests):
 
         # Getting the user's shopping lists for page 1
         resp = self.test_client.get(
-            "/api/v1/shoppinglists?q=r&limit=1", headers=dict(Authorization=f'Bearer {token}'))
+            "/api/v1/shoppinglists?q=r&limit=1",
+            headers=dict(Authorization=f'Bearer {token}'))
         self.assertEqual(resp.status_code, 200)
         data = json.loads(resp.data)
         self.assertEqual(data['status'], 'success')
@@ -570,7 +612,8 @@ class TestShoppingListAPI(BaseTests):
 
         # Getting the user's shopping lists for page 2
         resp = self.test_client.get(
-            "/api/v1/shoppinglists?q=r&limit=1&page=2", headers=dict(Authorization=f'Bearer {token}'))
+            "/api/v1/shoppinglists?q=r&limit=1&page=2",
+            headers=dict(Authorization=f'Bearer {token}'))
         self.assertEqual(resp.status_code, 200)
         data = json.loads(resp.data)
         self.assertEqual(data['status'], 'success')
@@ -611,24 +654,30 @@ class TestShoppingListByID(BaseTests):
         token = data['token']
 
         # Add the first shoppinglist to a user
-        resp = self.test_client.post("/api/v1/shoppinglists", data=dict(
-            name="groceries"), headers=dict(Authorization=f'Bearer {token}'))
+        resp = self.test_client.post("/api/v1/shoppinglists",
+                                     data={"name": "groceries",
+                                           "notify date": "2018-03-14"},
+                                     headers=dict(Authorization=f'Bearer {token}'))
         self.assertEqual(resp.status_code, 201)
         data = json.loads(resp.data)
         self.assertEqual(data["message"], "'groceries' successfully created")
         self.assertEqual(data["status"], "success")
 
         # Add the second shopping list to the logged in user
-        resp = self.test_client.post("/api/v1/shoppinglists", data=dict(
-            name="furniture"), headers=dict(Authorization=f'Bearer {token}'))
+        resp = self.test_client.post("/api/v1/shoppinglists",
+                                     data={"name": "furniture",
+                                           "notify date": "2017-12-23"},
+                                     headers=dict(Authorization=f'Bearer {token}'))
         self.assertEqual(resp.status_code, 201)
         data = json.loads(resp.data)
         self.assertEqual(data["message"], "'furniture' successfully created")
         self.assertEqual(data["status"], "success")
 
         # Add the third shoppinglist to the user
-        resp = self.test_client.post("/api/v1/shoppinglists", data=dict(
-            name="books"), headers=dict(Authorization=f'Bearer {token}'))
+        resp = self.test_client.post("/api/v1/shoppinglists",
+                                     data={"name": "books",
+                                           "notify date": "2017-12-23"},
+                                     headers=dict(Authorization=f'Bearer {token}'))
         self.assertEqual(resp.status_code, 201)
         data = json.loads(resp.data)
         self.assertEqual(data["message"], "'books' successfully created")
@@ -673,8 +722,10 @@ class TestShoppingListByID(BaseTests):
         token = data['token']
 
         # Add the first shoppinglist to a user
-        resp = self.test_client.post("/api/v1/shoppinglists", data=dict(
-            name="groceries"), headers=dict(Authorization=f'Bearer {token}'))
+        resp = self.test_client.post("/api/v1/shoppinglists",
+                                     data={"name": "groceries",
+                                           "notify date": "2018-03-14"},
+                                     headers=dict(Authorization=f'Bearer {token}'))
         self.assertEqual(resp.status_code, 201)
         data = json.loads(resp.data)
         self.assertEqual(data["message"], "'groceries' successfully created")
@@ -711,8 +762,8 @@ class TestShoppingListByID(BaseTests):
         token = data['token']
 
         # Add the first shoppinglist to a user
-        resp = self.test_client.post("/api/v1/shoppinglists", data=dict(
-            name="groceries"), headers=dict(Authorization=f'Bearer {token}'))
+        resp = self.test_client.post("/api/v1/shoppinglists", data={"name": "groceries", "notify date": "2018-03-14"},
+                                     headers=dict(Authorization=f'Bearer {token}'))
         self.assertEqual(resp.status_code, 201)
         data = json.loads(resp.data)
         self.assertEqual(data["message"], "'groceries' successfully created")
@@ -766,8 +817,8 @@ class TestShoppingListByID(BaseTests):
         token = data['token']
 
         # Add the first shoppinglist to a user
-        resp = self.test_client.post("/api/v1/shoppinglists", data=dict(
-            name="groceries"), headers=dict(Authorization=f'Bearer {token}'))
+        resp = self.test_client.post("/api/v1/shoppinglists", data={"name": "groceries", "notify date": "2018-03-14"},
+                                     headers=dict(Authorization=f'Bearer {token}'))
         self.assertEqual(resp.status_code, 201)
         data = json.loads(resp.data)
         self.assertEqual(data["message"], "'groceries' successfully created")
@@ -805,8 +856,8 @@ class TestShoppingListByID(BaseTests):
         token = data['token']
 
         # Add the first shoppinglist to a user
-        resp = self.test_client.post("/api/v1/shoppinglists", data=dict(
-            name="groceries"), headers=dict(Authorization=f'Bearer {token}'))
+        resp = self.test_client.post("/api/v1/shoppinglists", data={"name": "groceries", "notify date": "2018-03-14"},
+                                     headers=dict(Authorization=f'Bearer {token}'))
         self.assertEqual(resp.status_code, 201)
         data = json.loads(resp.data)
         self.assertEqual(data["message"], "'groceries' successfully created")
@@ -843,16 +894,20 @@ class TestShoppingListByID(BaseTests):
         token = data['token']
 
         # Add the first shoppinglist to a user
-        resp = self.test_client.post("/api/v1/shoppinglists", data=dict(
-            name="groceries"), headers=dict(Authorization=f'Bearer {token}'))
+        resp = self.test_client.post("/api/v1/shoppinglists",
+                                     data={"name": "groceries",
+                                           "notify date": "2018-03-14"},
+                                     headers=dict(Authorization=f'Bearer {token}'))
         self.assertEqual(resp.status_code, 201)
         data = json.loads(resp.data)
         self.assertEqual(data["message"], "'groceries' successfully created")
         self.assertEqual(data["status"], "success")
 
         # Add the second shopping list to the logged in user
-        resp = self.test_client.post("/api/v1/shoppinglists", data=dict(
-            name="furniture"), headers=dict(Authorization=f'Bearer {token}'))
+        resp = self.test_client.post("/api/v1/shoppinglists",
+                                     data={"name": "furniture",
+                                           "notify date": "2018-02-14"},
+                                     headers=dict(Authorization=f'Bearer {token}'))
         self.assertEqual(resp.status_code, 201)
         data = json.loads(resp.data)
         self.assertEqual(data["message"], "'furniture' successfully created")
@@ -904,16 +959,19 @@ class TestShoppingListByID(BaseTests):
         token = data['token']
 
         # Add the first shoppinglist to a user
-        resp = self.test_client.post("/api/v1/shoppinglists", data=dict(
-            name="groceries"), headers=dict(Authorization=f'Bearer {token}'))
+        resp = self.test_client.post("/api/v1/shoppinglists", data={"name": "groceries", "notify date": "2018-03-14"},
+                                     headers=dict(Authorization=f'Bearer {token}'))
         self.assertEqual(resp.status_code, 201)
         data = json.loads(resp.data)
         self.assertEqual(data["message"], "'groceries' successfully created")
         self.assertEqual(data["status"], "success")
 
         # Edit the list name to furniture
-        resp = self.test_client.put("/api/v1/shoppinglists/1", data=dict(
-            name="furniture"), headers=dict(Authorization=f'Bearer {token}'))
+        resp = self.test_client.put("/api/v1/shoppinglists/1",
+                                    data={"name": "furniture",
+                                          "notify date": "2018-07-07"},
+                                    headers=dict(Authorization=f'Bearer {token}')
+                                    )
         self.assertEqual(resp.status_code, 200)
         data = json.loads(resp.data)
         self.assertEqual(
@@ -945,8 +1003,8 @@ class TestShoppingListByID(BaseTests):
         token = data['token']
 
         # Add the first shoppinglist to a user
-        resp = self.test_client.post("/api/v1/shoppinglists", data=dict(
-            name="groceries"), headers=dict(Authorization=f'Bearer {token}'))
+        resp = self.test_client.post("/api/v1/shoppinglists", data={"name": "groceries", "notify date": "2018-03-14"},
+                                     headers=dict(Authorization=f'Bearer {token}'))
         self.assertEqual(resp.status_code, 201)
         data = json.loads(resp.data)
         self.assertEqual(data["message"], "'groceries' successfully created")
@@ -983,8 +1041,8 @@ class TestShoppingListByID(BaseTests):
         token = data['token']
 
         # Add the first shoppinglist to a user
-        resp = self.test_client.post("/api/v1/shoppinglists", data=dict(
-            name="groceries"), headers=dict(Authorization=f'Bearer {token}'))
+        resp = self.test_client.post("/api/v1/shoppinglists", data={"name": "groceries", "notify date": "2018-03-14"},
+                                     headers=dict(Authorization=f'Bearer {token}'))
         self.assertEqual(resp.status_code, 201)
         data = json.loads(resp.data)
         self.assertEqual(data["message"], "'groceries' successfully created")
@@ -1030,16 +1088,16 @@ class TestShoppingListByID(BaseTests):
         token = data['token']
 
         # Add the first shoppinglist to a user
-        resp = self.test_client.post("/api/v1/shoppinglists", data=dict(
-            name="groceries"), headers=dict(Authorization=f'Bearer {token}'))
+        resp = self.test_client.post("/api/v1/shoppinglists", data={"name": "groceries", "notify date": "2018-03-14"},
+                                     headers=dict(Authorization=f'Bearer {token}'))
         self.assertEqual(resp.status_code, 201)
         data = json.loads(resp.data)
         self.assertEqual(data["message"], "'groceries' successfully created")
         self.assertEqual(data["status"], "success")
 
         # Try editing the list name to groceries
-        resp = self.test_client.put("/api/v1/shoppinglists/1", data=dict(
-            name="groceries"), headers=dict(Authorization=f'Bearer {token}'))
+        resp = self.test_client.put("/api/v1/shoppinglists/1", data={"name": "groceries", "notify date": "2018-03-14"},
+                                    headers=dict(Authorization=f'Bearer {token}'))
         self.assertEqual(resp.status_code, 200)
         data = json.loads(resp.data)
         self.assertEqual(data['status'], 'failure')
@@ -1047,7 +1105,7 @@ class TestShoppingListByID(BaseTests):
             data["message"], "No changes were made to the list")
 
     def test_put_fails_if_the_name_parameter_is_not_given(self):
-                # Register a User
+        # Register a User
         resp = self.test_client.post(
             "/api/v1/auth/register", data=self.user_data)
         self.assertEqual(resp.status_code, 201)
@@ -1069,8 +1127,8 @@ class TestShoppingListByID(BaseTests):
         token = data['token']
 
         # Add the first shoppinglist to a user
-        resp = self.test_client.post("/api/v1/shoppinglists", data=dict(
-            name="groceries"), headers=dict(Authorization=f'Bearer {token}'))
+        resp = self.test_client.post("/api/v1/shoppinglists", data={"name": "groceries", "notify date": "2018-03-14"},
+                                     headers=dict(Authorization=f'Bearer {token}'))
         self.assertEqual(resp.status_code, 201)
         data = json.loads(resp.data)
         self.assertEqual(data["message"], "'groceries' successfully created")
@@ -1082,10 +1140,10 @@ class TestShoppingListByID(BaseTests):
         data = json.loads(resp.data)
         self.assertEqual(data['status'], 'failure')
         self.assertEqual(
-            data['message'], "'name' parameter is required to complete this request")
+            data['message'],"'name' and 'notify date' of the shoppinglist are required fields")
 
     def test_put_fails_if_new_name_already_exists(self):
-                # Register a User
+        # Register a User
         resp = self.test_client.post(
             "/api/v1/auth/register", data=self.user_data)
         self.assertEqual(resp.status_code, 201)
@@ -1107,32 +1165,38 @@ class TestShoppingListByID(BaseTests):
         token = data['token']
 
         # Add the first shoppinglist to a user
-        resp = self.test_client.post("/api/v1/shoppinglists", data=dict(
-            name="groceries"), headers=dict(Authorization=f'Bearer {token}'))
+        resp = self.test_client.post("/api/v1/shoppinglists",
+                                     data={"name": "groceries",
+                                           "notify date": "2018-03-14"},
+                                     headers=dict(Authorization=f'Bearer {token}'))
         self.assertEqual(resp.status_code, 201)
         data = json.loads(resp.data)
         self.assertEqual(data["message"], "'groceries' successfully created")
         self.assertEqual(data["status"], "success")
 
         # Add the second shoppinglist
-        resp = self.test_client.post("/api/v1/shoppinglists", data=dict(
-            name="books"), headers=dict(Authorization=f'Bearer {token}'))
+        resp = self.test_client.post("/api/v1/shoppinglists",
+                                     data={"name": "books",
+                                           "notify date": "2033-12-04"},
+                                     headers=dict(Authorization=f'Bearer {token}'))
         self.assertEqual(resp.status_code, 201)
         data = json.loads(resp.data)
         self.assertEqual(data["message"], "'books' successfully created")
         self.assertEqual(data["status"], "success")
 
         # Add the 3rd shoppinglist to the user
-        resp = self.test_client.post("/api/v1/shoppinglists", data=dict(
-            name="furniture"), headers=dict(Authorization=f'Bearer {token}'))
+        resp = self.test_client.post("/api/v1/shoppinglists",
+                                     data={"name": "furniture",
+                                           "notify date": "2033-12-04"},
+                                     headers=dict(Authorization=f'Bearer {token}'))
         self.assertEqual(resp.status_code, 201)
         data = json.loads(resp.data)
         self.assertEqual(data["message"], "'furniture' successfully created")
         self.assertEqual(data["status"], "success")
 
         # Edit the list name to furniture
-        resp = self.test_client.put("/api/v1/shoppinglists/3", data=dict(
-            name="groceries"), headers=dict(Authorization=f'Bearer {token}'))
+        resp = self.test_client.put("/api/v1/shoppinglists/3", data={"name": "groceries", "notify date": "2018-03-14"},
+                                    headers=dict(Authorization=f'Bearer {token}'))
         self.assertEqual(resp.status_code, 409)
         data = json.loads(resp.data)
         self.assertEqual(data['status'], 'failure')
