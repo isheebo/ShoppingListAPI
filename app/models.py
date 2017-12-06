@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 import psycopg2
 import jwt
-from sqlalchemy import Column, Integer, String, DateTime, Date, ForeignKey, Boolean, func
+from sqlalchemy import Column, Integer, String, DateTime, Date, ForeignKey, Boolean
 from flask import current_app
 from flask_bcrypt import Bcrypt
 
@@ -20,7 +20,7 @@ class BaseModel:
             db.session.add(self)
             db.session.commit()
             has_been_saved = True
-        except (RuntimeError, psycopg2.Error) as err:
+        except (RuntimeError, psycopg2.Error):
             db.session.rollback()
         return has_been_saved
 
@@ -32,7 +32,7 @@ class BaseModel:
             db.session.delete(self)
             db.session.commit()
             is_deleted = True
-        except (RuntimeError, psycopg2.Error) as err:
+        except (RuntimeError, psycopg2.Error):
             db.session.rollback()
         return is_deleted
 
