@@ -76,8 +76,9 @@ class TestModels(unittest.TestCase):
         user = User.query.filter_by(email=self.user.email).first()
         self.assertIsNotNone(user)
         self.assertEqual(user.email, self.user.email)
-        shoppinglist = ShoppingList(user.id, "groceries")
+        shoppinglist = ShoppingList(user.id, "groceries", "2018-1-28")
         self.assertEqual(shoppinglist.name, "groceries")
+        self.assertEqual(shoppinglist.notify_date.strftime("%Y-%m-%d"), "2018-01-28")
         # until the shoppinglist is saved, its ID is None
         self.assertIsNone(shoppinglist.id)
         shoppinglist.save()
@@ -91,8 +92,9 @@ class TestModels(unittest.TestCase):
         user = User.query.filter_by(email=self.user.email).first()
         self.assertIsNotNone(user)
         self.assertEqual(user.email, self.user.email)
-        shoppinglist = ShoppingList(user.id, "groceries")
+        shoppinglist = ShoppingList(user.id, "groceries", "2017-12-28")
         self.assertEqual(shoppinglist.name, "groceries")
+        self.assertEqual(shoppinglist.notify_date.strftime("%Y-%m-%d"), "2017-12-28")
         # until the shoppinglist is saved, its ID is None
         self.assertIsNone(shoppinglist.id)
         shoppinglist.save()
