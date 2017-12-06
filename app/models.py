@@ -115,9 +115,10 @@ class ShoppingList(db.Model, BaseModel):
     date_created = Column(DateTime, default=datetime.now())
     date_modified = Column(DateTime, default=datetime.now())
 
-    def __init__(self, user_id, name):
+    def __init__(self, user_id, name, notify_date):
         self.user_id = user_id
         self.name = name
+        self.notify_date = datetime.strptime(notify_date, "%Y-%m-%d")
 
 
 class Item(db.Model, BaseModel):
