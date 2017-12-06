@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 import psycopg2
 import jwt
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean
+from sqlalchemy import Column, Integer, String, DateTime, Date, ForeignKey, Boolean, func
 from flask import current_app
 from flask_bcrypt import Bcrypt
 
@@ -109,7 +109,7 @@ class ShoppingList(db.Model, BaseModel):
     user_id = Column(Integer, ForeignKey(User.id))
 
     name = Column(String, nullable=False)
-    notify_date = Column(DateTime, default=datetime.now())
+    notify_date = Column(Date, nullable=False)
     items = db.relationship('Item', order_by="Item.id", lazy="dynamic")
 
     date_created = Column(DateTime, default=datetime.now())
