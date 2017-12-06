@@ -227,7 +227,7 @@ class TestLogout(BaseTests):
         self.assertIsNotNone(data["token"])
 
         invalid_token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1MDg2MTExNjgs" + \
-            "ImV4cCI6MTUwODYxNDc2OCwic3ViIjoyfQ.I_WBI93N3PRlAXOasnXJ5QY4Zg0ggvNXA4b2B2CQ9g0"
+                        "ImV4cCI6MTUwODYxNDc2OCwic3ViIjoyfQ.I_WBI93N3PRlAXOasnXJ5QY4Zg0ggvNXA4b2B2CQ9g0"
 
         # For an expired/blacklisted/invalid token but of right length
         resp = self.test_client.post("/api/v1/auth/logout",
@@ -300,7 +300,7 @@ class TestLogout(BaseTests):
 
 
 class TestResetPassword(BaseTests):
-    def test_reset_password_is_successful_for_an_existing_email(self):
+    def test_reset_password_is_successful_for_an_existing_user(self):
         # Register a User
         resp = self.test_client.post(
             "/api/v1/auth/register", data=self.user_data)
@@ -310,39 +310,120 @@ class TestResetPassword(BaseTests):
             data["message"], "user with email 'testor@example.com' has been registered")
         self.assertEqual(data["status"], "success")
 
-        # reset password for `testor@example.com`
-        # any password even if it is the original password,
-        # once used should be able to invoke the password reset
-        resp = self.test_client.post("/api/v1/auth/reset-password",
-                                     data={'password': '!0ctoPus', 'confirm password': '!0ctoPus',
-                                           'email': 'testor@example.com'})
+        # Login a User
+
+        resp = self.test_client.post("/api/v1/auth/login", data=self.user_data)
         self.assertEqual(resp.status_code, 200)
+        data = json.loads(resp.data)
+        self.assertEqual(
+            data["message"], "Login successful for 'testor@example.com'")
+        self.assertEqual(data["status"], "success")
+        self.assertIsNotNone(data["token"])
+
+        # reset-password should pass provided the new password
+        #  is not similar to the old saved password
+        token = data['token']
+        resp = self.test_client.post("/api/v1/auth/reset-password",
+                                     headers=dict(Authorization=f"Bearer {token}"),
+                                     data={'password': '0ctoPus', 'confirm password': '0ctoPus'})
+
+        self.assertEqual(resp.status_code, 200)
+
         data = json.loads(resp.data)
         self.assertEqual(data["status"], "success")
         self.assertEqual(
             data["message"], "password reset successful for 'testor@example.com'")
 
-    def test_reset_password_fails_if_email_and_hence_user_is_non_existent(self):
-        resp = self.test_client.post("/api/v1/auth/reset-password",
-                                     data={'password': '!0ctoPus', 'confirm password': '!0ctoPus',
-                                           'email': 'testor@example.com'})
-        self.assertEqual(resp.status_code, 403)
+    def test_reset_password_fails_if_new_password_is_similar_to_old_password(self):
+        # Register a User
+        resp = self.test_client.post(
+            "/api/v1/auth/register", data=self.user_data)
+        self.assertEqual(resp.status_code, 201)
+        data = json.loads(resp.data)
+        self.assertEqual(
+            data["message"], "user with email 'testor@example.com' has been registered")
+        self.assertEqual(data["status"], "success")
+
+        # Login a User
+
+        resp = self.test_client.post("/api/v1/auth/login", data=self.user_data)
+        self.assertEqual(resp.status_code, 200)
+        data = json.loads(resp.data)
+        self.assertEqual(
+            data["message"], "Login successful for 'testor@example.com'")
+        self.assertEqual(data["status"], "success")
+        self.assertIsNotNone(data["token"])
+
+        # reset-password should pass provided the new password
+        # is not similar to the old saved password
+        token = data['token']
+        resp = self.test_client.post(
+            "/api/v1/auth/reset-password",
+            headers=dict(Authorization=f"Bearer {token}"),
+            data={'password': '!0ctoPus', 'confirm password': '!0ctoPus'}
+        )
+
+        self.assertEqual(resp.status_code, 400)
         data = json.loads(resp.data)
         self.assertEqual(data["status"], "failure")
         self.assertEqual(
-            data["message"], 'user with email `testor@example.com` not found!')
+            data["message"], "Your new password should not be similar to your old password")
 
     def test_reset_password_fails_if_the_given_passwords_do_not_match(self):
-        resp = self.test_client.post("/api/v1/auth/reset-password",
-                                     data={'password': '!0ctoPuS', 'confirm password': '!0ctoPus',
-                                           'email': 'testor@example.com'})
-        self.assertEqual(resp.status_code, 403)
+        # Register a User
+        resp = self.test_client.post(
+            "/api/v1/auth/register", data=self.user_data)
+        self.assertEqual(resp.status_code, 201)
+        data = json.loads(resp.data)
+        self.assertEqual(
+            data["message"], "user with email 'testor@example.com' has been registered")
+        self.assertEqual(data["status"], "success")
+
+        # Login a User
+
+        resp = self.test_client.post("/api/v1/auth/login", data=self.user_data)
+        self.assertEqual(resp.status_code, 200)
+        data = json.loads(resp.data)
+        self.assertEqual(
+            data["message"], "Login successful for 'testor@example.com'")
+        self.assertEqual(data["status"], "success")
+        self.assertIsNotNone(data["token"])
+
+        token = data['token']
+        resp = self.test_client.post(
+            "/api/v1/auth/reset-password",
+            headers=dict(Authorization=f"Bearer {token}"),
+            data={'password': '!0ctoPus1', 'confirm password': '!0ctoPus'}
+        )
+
+        self.assertEqual(resp.status_code, 400)
         data = json.loads(resp.data)
         self.assertEqual(data["status"], "failure")
         self.assertEqual(data["message"], "the given passwords don't match")
 
-    def test_reset_password_fails_if_password_has_less_than_8_characters_or_has_more_but_poorly_formatted(self):
+    def test_reset_password_fails_if_password_has_less_than_6_characters(self):
+        # Register a User
+        resp = self.test_client.post(
+            "/api/v1/auth/register", data=self.user_data)
+        self.assertEqual(resp.status_code, 201)
+        data = json.loads(resp.data)
+        self.assertEqual(
+            data["message"], "user with email 'testor@example.com' has been registered")
+        self.assertEqual(data["status"], "success")
+
+        # Login a User
+
+        resp = self.test_client.post("/api/v1/auth/login", data=self.user_data)
+        self.assertEqual(resp.status_code, 200)
+        data = json.loads(resp.data)
+        self.assertEqual(
+            data["message"], "Login successful for 'testor@example.com'")
+        self.assertEqual(data["status"], "success")
+        self.assertIsNotNone(data["token"])
+
+        token = data['token']
         resp = self.test_client.post("/api/v1/auth/reset-password",
+                                     headers=dict(Authorization=f"Bearer {token}"),
                                      data={'password': 'ten0R', 'confirm password': 'ten0R',
                                            'email': 'testor@example.com'})
         self.assertEqual(resp.status_code, 400)
@@ -352,10 +433,93 @@ class TestResetPassword(BaseTests):
             data["message"], "password must have a minimum of 6 characters")
 
     def test_reset_password_fails_if_none_or_one_of_the_fields_are_not_given(self):
+        # Register a User
+        resp = self.test_client.post(
+            "/api/v1/auth/register", data=self.user_data)
+        self.assertEqual(resp.status_code, 201)
+        data = json.loads(resp.data)
+        self.assertEqual(
+            data["message"], "user with email 'testor@example.com' has been registered")
+        self.assertEqual(data["status"], "success")
+
+        # Login a User
+
+        resp = self.test_client.post("/api/v1/auth/login", data=self.user_data)
+        self.assertEqual(resp.status_code, 200)
+        data = json.loads(resp.data)
+        self.assertEqual(
+            data["message"], "Login successful for 'testor@example.com'")
+        self.assertEqual(data["status"], "success")
+        self.assertIsNotNone(data["token"])
+
+        token = data['token']
+
         # reset password for `testor@example.com`
-        resp = self.test_client.post("/api/v1/auth/reset-password")
+        resp = self.test_client.post("/api/v1/auth/reset-password",
+                                     headers=dict(Authorization=f'Bearer {token}'))
         self.assertEqual(resp.status_code, 400)
         data = json.loads(resp.data)
         self.assertEqual(data["status"], "failure")
         self.assertEqual(
-            data["message"], "the fields: email, password, and 'confirm password' are required")
+            data["message"], "the fields 'password' and 'confirm password' are required")
+
+    def test_reset_password_fails_for_no_authorization_header_specified(self):
+        # Register a User
+        resp = self.test_client.post(
+            "/api/v1/auth/register", data=self.user_data)
+        self.assertEqual(resp.status_code, 201)
+        data = json.loads(resp.data)
+        self.assertEqual(
+            data["message"], "user with email 'testor@example.com' has been registered")
+        self.assertEqual(data["status"], "success")
+
+        # Login a User
+
+        resp = self.test_client.post("/api/v1/auth/login", data=self.user_data)
+        self.assertEqual(resp.status_code, 200)
+        data = json.loads(resp.data)
+        self.assertEqual(
+            data["message"], "Login successful for 'testor@example.com'")
+        self.assertEqual(data["status"], "success")
+        self.assertIsNotNone(data["token"])
+
+        resp = self.test_client.post("/api/v1/auth/reset-password",
+                                     data={'password': 'ten0Rs', 'confirm password': 'ten0Rs',
+                                           'email': 'testor@example.com'})
+        self.assertEqual(resp.status_code, 403)
+        data = json.loads(resp.data)
+        self.assertEqual(data["status"], "failure")
+        self.assertEqual(
+            data["message"], "Authorization header must be set for a successful request")
+
+    def test_reset_password_fails_if_auth_header_specified_but_in_poor_format(self):
+        # Register a User
+        resp = self.test_client.post(
+            "/api/v1/auth/register", data=self.user_data)
+        self.assertEqual(resp.status_code, 201)
+        data = json.loads(resp.data)
+        self.assertEqual(
+            data["message"], "user with email 'testor@example.com' has been registered")
+        self.assertEqual(data["status"], "success")
+
+        # Login a User
+
+        resp = self.test_client.post("/api/v1/auth/login", data=self.user_data)
+        self.assertEqual(resp.status_code, 200)
+        data = json.loads(resp.data)
+        self.assertEqual(
+            data["message"], "Login successful for 'testor@example.com'")
+        self.assertEqual(data["status"], "success")
+        self.assertIsNotNone(data["token"])
+
+        token = data['token']
+        resp = self.test_client.post("/api/v1/auth/reset-password",
+                                     headers=dict(Authorization=f"Bearers {token}"),
+                                     data={'password': 'ten0Rs', 'confirm password': 'ten0Rs',
+                                           'email': 'testor@example.com'})
+        self.assertEqual(resp.status_code, 403)
+        data = json.loads(resp.data)
+        self.assertEqual(data["status"], "failure")
+        self.assertEqual(
+            data["message"], "Authentication Header is poorly formatted. "
+                             "The acceptable format is `Bearer <jwt_token>`")

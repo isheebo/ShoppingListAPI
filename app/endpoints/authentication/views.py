@@ -114,41 +114,46 @@ class Logout(MethodView):
 class ResetPassword(MethodView):
     @staticmethod
     def post():
-        email = request.form.get("email")
+        user_id, msg, status, status_code, _ = parse_auth_header(request)
+        if user_id is None:
+            return jsonify({
+                "status": status,
+                "message": msg
+            }), status_code
+
         password = request.form.get("password")
         confirm_password = request.form.get("confirm password")
-        if email and password and confirm_password:
-            if len(password) < 6:  # 6 is the minimum expected password length
+        if password and confirm_password:
+            if len(password) < 6:
                 return jsonify({
                     "status": "failure",
                     "message": "password must have a minimum of 6 characters"
                 }), 400
 
-            password_hash = Bcrypt().generate_password_hash(password).decode('utf-8')
-
-            # if the passwords are similar...
+            password_hash = Bcrypt().generate_password_hash(password).decode('utf8')
             if Bcrypt().check_password_hash(password_hash, confirm_password):
-                user = User.query.filter_by(email=email.lower()).first()
-                if user:
+                user = User.query.filter_by(id=user_id).first()
+                if user and not user.validate_password(password):
+                    # if old password is not similar to the new password
                     user.password = password_hash
                     user.save()
                     return jsonify({
                         "status": "success",
                         "message": f"password reset successful for '{user.email}'"
                     }), 200
-
                 return jsonify({
                     "status": "failure",
-                    "message": f"user with email `{email}` not found!"
-                }), 403
+                    "message": "Your new password should not be similar to "
+                               "your old password"
+                }), 400
+
             return jsonify({
                 "status": "failure",
                 "message": "the given passwords don't match"
-            }), 403
-
+            }), 400
         return jsonify({
             "status": "failure",
-            "message": "the fields: email, password, and 'confirm password' are required"
+            "message": "the fields 'password' and 'confirm password' are required"
         }), 400
 
 
