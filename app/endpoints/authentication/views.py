@@ -144,17 +144,18 @@ class ResetPassword(MethodView):
                 return jsonify({
                     "status": "failure",
                     "message": "Your new password should not be similar to "
-                    "your old password"
+                               "your old password"
                 }), 400
 
             return jsonify({
                 "status": "failure",
                 "message": "the given passwords don't match"
-            }), 403
+            }), 400
         return jsonify({
             "status": "failure",
             "message": "the fields 'password' and 'confirm password' are required"
         }), 400
+
 
 register_user = RegisterUser.as_view("register_user")
 login = Login.as_view("login")
