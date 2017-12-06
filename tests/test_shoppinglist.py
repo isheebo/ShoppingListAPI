@@ -34,6 +34,35 @@ class TestShoppingListAPI(BaseTests):
         self.assertEqual(data["message"], "'groceries' successfully created")
         self.assertEqual(data["status"], "success")
 
+    def test_post_shoppinglist_fails_for_invalidly_formatted_notify_date(self):
+        # Register a User
+        resp = self.test_client.post(
+            "/api/v1/auth/register", data=self.user_data)
+        self.assertEqual(resp.status_code, 201)
+        data = json.loads(resp.data)
+        self.assertEqual(
+            data["message"], "user with email 'testor@example.com' has been registered")
+        self.assertEqual(data["status"], "success")
+
+        # Login a User
+
+        resp = self.test_client.post("/api/v1/auth/login", data=self.user_data)
+        self.assertEqual(resp.status_code, 200)
+        data = json.loads(resp.data)
+        self.assertEqual(
+            data["message"], "Login successful for 'testor@example.com'")
+        self.assertEqual(data["status"], "success")
+        self.assertIsNotNone(data["token"])
+
+        # Add a shoppinglist to a user
+        resp = self.test_client.post("/api/v1/shoppinglists",
+                                     data={"name": "groceries",
+                                           "notify date": "201x-03-14"},
+                                     headers=dict(Authorization=f'Bearer {data["token"]}'))
+        self.assertEqual(resp.status_code, 400)
+        data = json.loads(resp.data)
+        self.assertEqual(data['message'], "dates must be specified as strings but with integer values")
+
     def test_post_shopping_list_fails_if_token_has_already_expired(self):
         # Register a User
         resp = self.test_client.post(
