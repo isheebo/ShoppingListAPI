@@ -90,6 +90,6 @@ def parse_notify_date(date_string):
             x = str(datetime.strptime(f"{year}-{month}-{day}", "%Y-%m-%d"))
             return x.split()[0], "success"
         except ValueError:
-            return None, "The given date is invalid"
+            return None, "The given date is invalid and doesn't exist on the calendar"
     except ValueError:
         return None, "dates must be specified as strings"
