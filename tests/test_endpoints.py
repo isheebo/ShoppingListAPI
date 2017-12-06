@@ -19,7 +19,7 @@ class TestEndpoints(BaseTests):
         for case in possible_cases:
             date_string, message = parse_notify_date(case)
             self.assertIsNone(date_string)
-            self.assertEqual(message, "dates must be specified as strings")
+            self.assertEqual(message, "dates must be specified as strings but with integer values")
 
     def test_notify_date_fails_if_given_date_is_invalid(self):
         possible_cases = ["2017-02-30", "2017-02-31", "2018-06-31", "2019-08-99"]

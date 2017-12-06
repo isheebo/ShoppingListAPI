@@ -92,4 +92,4 @@ def parse_notify_date(date_string):
         except ValueError:
             return None, "The given date is invalid and doesn't exist on the calendar"
     except ValueError:
-        return None, "dates must be specified as strings"
+        return None, "dates must be specified as strings but with integer values"
