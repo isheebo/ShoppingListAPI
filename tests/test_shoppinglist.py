@@ -1011,6 +1011,48 @@ class TestShoppingListByID(BaseTests):
         self.assertEqual(data['data']['name'], 'furniture')
         self.assertEqual(data['status'], 'success')
 
+    def test_put_fails_if_notify_date_is_invalid(self):
+        # Register a User
+        resp = self.test_client.post(
+            "/api/v1/auth/register", data=self.user_data)
+        self.assertEqual(resp.status_code, 201)
+        data = json.loads(resp.data)
+        self.assertEqual(
+            data["message"], "user with email 'testor@example.com' has been registered")
+        self.assertEqual(data["status"], "success")
+
+        # Login a User
+
+        resp = self.test_client.post("/api/v1/auth/login", data=self.user_data)
+        self.assertEqual(resp.status_code, 200)
+        data = json.loads(resp.data)
+        self.assertEqual(
+            data["message"], "Login successful for 'testor@example.com'")
+        self.assertEqual(data["status"], "success")
+        self.assertIsNotNone(data["token"])
+
+        token = data['token']
+
+        # Add the first shoppinglist to a user
+        resp = self.test_client.post("/api/v1/shoppinglists",
+                                     data={"name": "groceries",
+                                           "notify date": "2018-03-14"},
+                                     headers=dict(Authorization=f'Bearer {token}'))
+        self.assertEqual(resp.status_code, 201)
+        data = json.loads(resp.data)
+        self.assertEqual(data["message"], "'groceries' successfully created")
+        self.assertEqual(data["status"], "success")
+
+        # Edit the list name to furniture
+        resp = self.test_client.put("/api/v1/shoppinglists/1",
+                                    data={"name": "furniture",
+                                          "notify date": "20yy-07-07"},
+                                    headers=dict(Authorization=f'Bearer {token}')
+                                    )
+        self.assertEqual(resp.status_code, 400)
+        data = json.loads(resp.data)
+        self.assertEqual(data['message'], "dates must be specified as strings but with integer values")
+
     def test_put_fails_if_list_id_is_not_an_integer(self):
         # Register a User
         resp = self.test_client.post(
@@ -1185,7 +1227,7 @@ class TestShoppingListByID(BaseTests):
         data = json.loads(resp.data)
         self.assertEqual(data['status'], 'failure')
         self.assertEqual(
-            data['message'],"'name' and 'notify date' of the shoppinglist are required fields")
+            data['message'], "'name' and 'notify date' of the shoppinglist are required fields")
 
     def test_put_fails_if_new_name_already_exists(self):
         # Register a User
