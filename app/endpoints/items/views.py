@@ -209,6 +209,7 @@ class ItemsAPIByID(MethodView):
 
         item, message, status, status_code = get_item(
             user_id, list_id, item_id)
+
         if item is not None:
             # query parameters
             name = request.form.get("name")

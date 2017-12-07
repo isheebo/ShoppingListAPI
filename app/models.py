@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 import psycopg2
 import jwt
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean
+from sqlalchemy import Column, Integer, String, DateTime, Date, ForeignKey, Boolean
 from flask import current_app
 from flask_bcrypt import Bcrypt
 
@@ -20,7 +20,7 @@ class BaseModel:
             db.session.add(self)
             db.session.commit()
             has_been_saved = True
-        except (RuntimeError, psycopg2.Error) as err:
+        except (RuntimeError, psycopg2.Error):
             db.session.rollback()
         return has_been_saved
 
@@ -32,7 +32,7 @@ class BaseModel:
             db.session.delete(self)
             db.session.commit()
             is_deleted = True
-        except (RuntimeError, psycopg2.Error) as err:
+        except (RuntimeError, psycopg2.Error):
             db.session.rollback()
         return is_deleted
 
@@ -109,15 +109,16 @@ class ShoppingList(db.Model, BaseModel):
     user_id = Column(Integer, ForeignKey(User.id))
 
     name = Column(String, nullable=False)
-    notify_date = Column(DateTime, default=datetime.now())
+    notify_date = Column(Date, nullable=False)
     items = db.relationship('Item', order_by="Item.id", lazy="dynamic")
 
     date_created = Column(DateTime, default=datetime.now())
     date_modified = Column(DateTime, default=datetime.now())
 
-    def __init__(self, user_id, name):
+    def __init__(self, user_id, name, notify_date):
         self.user_id = user_id
         self.name = name
+        self.notify_date = datetime.strptime(notify_date, "%Y-%m-%d")
 
 
 class Item(db.Model, BaseModel):

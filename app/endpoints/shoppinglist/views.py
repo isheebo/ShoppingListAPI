@@ -2,7 +2,7 @@ from datetime import datetime
 from flask import Blueprint, request, jsonify
 from flask.views import MethodView
 
-from app.endpoints import parse_auth_header, get_shoppinglist
+from app.endpoints import parse_auth_header, get_shoppinglist, parse_notify_date
 from app.models import ShoppingList
 
 list_blueprint = Blueprint("list_blueprint", __name__, url_prefix="/api/v1")
@@ -21,10 +21,12 @@ class ShoppingListAPI(MethodView):
 
         # prevents errors due to empty string names
         name = request.form.get("name")
+        notify_date = request.form.get("notify date")
 
         name = name.strip() if name else ""
+        notify_date = notify_date.strip() if notify_date else ""
 
-        if name:
+        if name and notify_date:
             name = name.lower()
             name_already_exists = ShoppingList.query.filter(
                 ShoppingList.user_id == user_id).filter(ShoppingList.name == name).all()
@@ -34,7 +36,14 @@ class ShoppingListAPI(MethodView):
                     "message": f"a shopping list with name '{name}' already exists"
                 }), 409
 
-            shoppinglist = ShoppingList(user_id, name)
+            date_string, message = parse_notify_date(notify_date)
+            if date_string is None:
+                return jsonify({
+                    "status": "failure",
+                    "message": message,
+                }), 400
+
+            shoppinglist = ShoppingList(user_id, name, date_string)
             shoppinglist.save()
             return jsonify({
                 "status": "success",
@@ -42,7 +51,7 @@ class ShoppingListAPI(MethodView):
             }), 201
         return jsonify({
             "status": "failure",
-            "message": "'name' of the shoppinglist is a required field"
+            "message": "'name' and 'notify date' of the shoppinglist are required fields"
         }), 400
 
     @staticmethod
@@ -184,15 +193,26 @@ class ShoppingListByID(MethodView):
         shoppinglist, message, status, status_code = get_shoppinglist(
             user_id, list_id)
         if shoppinglist:  # a shoppinglist with list_id exists in the database
+
             name = request.form.get("name")
+            notify_date = request.form.get("notify date")
 
             name = name.strip() if name else ""
-            if name:
+            notify_date = notify_date.strip() if notify_date else ""
+
+            if name and notify_date:
                 name = name.lower()
                 name_already_exists = ShoppingList.query.filter(ShoppingList.user_id == user_id).filter((
                     (ShoppingList.name == name) & (ShoppingList.id != list_id))).all()
 
-                if shoppinglist.name == name:
+                date_string, message = parse_notify_date(notify_date)
+                if date_string is None:
+                    return jsonify({
+                        "status": "failure",
+                        "message": message,
+                    }), 400
+
+                if shoppinglist.name == name and shoppinglist.notify_date.strftime("%Y-%m-%d") == date_string:
                     return jsonify({
                         "status": "failure",
                         "message": "No changes were made to the list"
@@ -205,6 +225,7 @@ class ShoppingListByID(MethodView):
                     }), 409
 
                 shoppinglist.name = name
+                shoppinglist.notify_date = date_string
                 shoppinglist.date_modified = datetime.now()
                 shoppinglist.save()
                 return jsonify({
@@ -217,10 +238,12 @@ class ShoppingListByID(MethodView):
                     },
                     "message": "shoppinglist has been successfully edited!"
                 }), 200
+
             return jsonify({
                 "status": "failure",
-                "message": "'name' parameter is required to complete this request"
+                "message": "'name' and 'notify date' of the shoppinglist are required fields"
             }), 400
+
         return jsonify({
             "status": status,
             "message": message

@@ -1,3 +1,4 @@
+from datetime import datetime
 from app.models import User, ShoppingList, Item
 
 
@@ -69,3 +70,26 @@ def get_item(user_id, list_id, item_id):
         status_code = 400
         message = "item IDs must be integers"
         return None, message, status, status_code
+
+
+def parse_notify_date(date_string):
+    split_date = date_string.split("-")
+
+    if len(split_date) != 3 or len(split_date[0]) != 4 or \
+            not (0 < len(split_date[1]) < 3) \
+            or not (0 < len(split_date[2]) < 3):
+        return None, "the acceptable date format is `yyyy-mm-dd`"
+
+    try:
+        year = int(split_date[0])
+        month = int(split_date[1])
+        day = int(split_date[2])
+        # To deal with cases where the date is improper,
+        # such as 31st February or 100th January
+        try:
+            x = str(datetime.strptime(f"{year}-{month}-{day}", "%Y-%m-%d"))
+            return x.split()[0], "success"
+        except ValueError:
+            return None, "The given date is invalid and doesn't exist on the calendar"
+    except ValueError:
+        return None, "dates must be specified as strings but with integer values"
