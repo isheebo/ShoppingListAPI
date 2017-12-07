@@ -1388,6 +1388,17 @@ class TestItemsAPIByID(BaseTests):
         self.assertEqual(data["message"], "'beans' has been added")
         self.assertEqual(data['status'], 'success')
 
+        # try editing a list
+        resp = self.test_client.put('/api/v1/shoppinglists/1/items/1', data=dict(
+            name="fresh beans", price='3,500/=', quantity='1 kg'), headers=dict(Authorization=f'Bearer {token}'))
+        self.assertEqual(resp.status_code, 200)
+        data = json.loads(resp.data)
+        self.assertEqual(data['status'], 'success')
+        self.assertEqual(data['data']['id'], 1)
+        self.assertEqual(data['data']['name'], 'fresh beans')
+        self.assertEqual(data['data']['price'], '3,500/=')
+        self.assertEqual(data['message'], 'item has been updated successfully')
+
     def test_put_item_at_id_fails_if_item_is_None(self):
         # Register a User
         resp = self.test_client.post(
