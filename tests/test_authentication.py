@@ -237,7 +237,7 @@ class TestLogout(BaseTests):
 
         self.assertEqual(data["status"], "failure")
         self.assertEqual(
-            data["message"], 'failed to decode the given token')
+            data["message"], "the given token is invalid. please re-login")
 
         # for a token with an invalid/corrupted header
         resp = self.test_client.post("/api/v1/auth/logout",
@@ -247,7 +247,7 @@ class TestLogout(BaseTests):
 
         self.assertEqual(data["status"], "failure")
         self.assertEqual(
-            data["message"], "failed to decode the given token")
+            data["message"], "the given token is invalid. please re-login")
 
         # for a token with an invalid/corrupted payload
         resp = self.test_client.post("/api/v1/auth/logout",
@@ -257,7 +257,7 @@ class TestLogout(BaseTests):
 
         self.assertEqual(data["status"], "failure")
         self.assertEqual(
-            data["message"], "failed to decode the given token")
+            data["message"], "the given token is invalid. please re-login")
 
     def test_logout_fails_if_an_already_blacklisted_token_is_used(self):
         # Register a User
@@ -324,7 +324,8 @@ class TestResetPassword(BaseTests):
         #  is not similar to the old saved password
         token = data['token']
         resp = self.test_client.post("/api/v1/auth/reset-password",
-                                     headers=dict(Authorization=f"Bearer {token}"),
+                                     headers=dict(
+                                         Authorization=f"Bearer {token}"),
                                      data={'password': '0ctoPus', 'confirm password': '0ctoPus'})
 
         self.assertEqual(resp.status_code, 200)
@@ -423,7 +424,8 @@ class TestResetPassword(BaseTests):
 
         token = data['token']
         resp = self.test_client.post("/api/v1/auth/reset-password",
-                                     headers=dict(Authorization=f"Bearer {token}"),
+                                     headers=dict(
+                                         Authorization=f"Bearer {token}"),
                                      data={'password': 'ten0R', 'confirm password': 'ten0R',
                                            'email': 'testor@example.com'})
         self.assertEqual(resp.status_code, 400)
@@ -514,7 +516,8 @@ class TestResetPassword(BaseTests):
 
         token = data['token']
         resp = self.test_client.post("/api/v1/auth/reset-password",
-                                     headers=dict(Authorization=f"Bearers {token}"),
+                                     headers=dict(
+                                         Authorization=f"Bearers {token}"),
                                      data={'password': 'ten0Rs', 'confirm password': 'ten0Rs',
                                            'email': 'testor@example.com'})
         self.assertEqual(resp.status_code, 403)

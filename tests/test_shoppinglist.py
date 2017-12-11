@@ -61,7 +61,8 @@ class TestShoppingListAPI(BaseTests):
                                      headers=dict(Authorization=f'Bearer {data["token"]}'))
         self.assertEqual(resp.status_code, 400)
         data = json.loads(resp.data)
-        self.assertEqual(data['message'], "dates must be specified as strings but with integer values")
+        self.assertEqual(
+            data['message'], "dates must be specified as strings but with integer values")
 
     def test_post_shopping_list_fails_if_token_has_already_expired(self):
         # Register a User
@@ -86,7 +87,7 @@ class TestShoppingListAPI(BaseTests):
         time.sleep(12)  # enough time for the token to expire in testing mode.
 
         # try adding a shoppinglist.
-        resp = self.test_client.post("/api/v1/shoppinglists", 
+        resp = self.test_client.post("/api/v1/shoppinglists",
                                      data={"name": "groceries",
                                            "notify date": "2018-03-14"},
                                      headers=dict(Authorization=f'Bearer {data["token"]}'))
@@ -168,7 +169,7 @@ class TestShoppingListAPI(BaseTests):
         data = json.loads(resp.data)
         self.assertEqual(data["status"], "failure")
         self.assertEqual(
-            data["message"], 'failed to decode the given token')
+            data["message"], "the given token is invalid. please re-login")
 
     def test_post_shopping_list_fails_if_that_list_already_exists(self):
         # Registering a user
@@ -263,8 +264,9 @@ class TestShoppingListAPI(BaseTests):
         token = data['token']
 
         # Add the first shoppinglist to a user
-        resp = self.test_client.post("/api/v1/shoppinglists", 
-                                     data={"name": "groceries", "notify date": "2018-03-14"},
+        resp = self.test_client.post("/api/v1/shoppinglists",
+                                     data={"name": "groceries",
+                                           "notify date": "2018-03-14"},
                                      headers=dict(Authorization=f'Bearer {token}'))
         self.assertEqual(resp.status_code, 201)
         data = json.loads(resp.data)
@@ -348,7 +350,7 @@ class TestShoppingListAPI(BaseTests):
         token = data['token']
 
         # Add the first shoppinglist to a user
-        resp = self.test_client.post("/api/v1/shoppinglists", 
+        resp = self.test_client.post("/api/v1/shoppinglists",
                                      data={"name": "groceries",
                                            "notify date": "2018-03-14"},
                                      headers=dict(Authorization=f'Bearer {token}'))
@@ -369,7 +371,7 @@ class TestShoppingListAPI(BaseTests):
 
         # Getting the user's shopping lists by query
         resp = self.test_client.get(
-            "/api/v1/shoppinglists?q=gr", 
+            "/api/v1/shoppinglists?q=gr",
             headers=dict(Authorization=f'Bearer {token}'))
         self.assertEqual(resp.status_code, 200)
         data = json.loads(resp.data)
@@ -404,7 +406,7 @@ class TestShoppingListAPI(BaseTests):
         token = data['token']
 
         # Add the first shoppinglist to a user
-        resp = self.test_client.post("/api/v1/shoppinglists", 
+        resp = self.test_client.post("/api/v1/shoppinglists",
                                      data={"name": "groceries",
                                            "notify date": "2018-03-14"},
                                      headers=dict(Authorization=f'Bearer {token}'))
@@ -414,7 +416,7 @@ class TestShoppingListAPI(BaseTests):
         self.assertEqual(data["status"], "success")
 
         # Add the second shopping list to the logged in user
-        resp = self.test_client.post("/api/v1/shoppinglists", 
+        resp = self.test_client.post("/api/v1/shoppinglists",
                                      data={"name": "furniture",
                                            "notify date": "2018-05-10"},
                                      headers=dict(Authorization=f'Bearer {token}'))
@@ -483,7 +485,7 @@ class TestShoppingListAPI(BaseTests):
         data = json.loads(resp.data)
         self.assertEqual(data["status"], "failure")
         self.assertEqual(
-            data["message"], 'failed to decode the given token')
+            data["message"], "the given token is invalid. please re-login")
 
     def test_get_shoppinglists_paginates_output(self):
         # Register a User
@@ -1001,7 +1003,8 @@ class TestShoppingListByID(BaseTests):
         resp = self.test_client.put("/api/v1/shoppinglists/1",
                                     data={"name": "furniture",
                                           "notify date": "2018-07-07"},
-                                    headers=dict(Authorization=f'Bearer {token}')
+                                    headers=dict(
+                                        Authorization=f'Bearer {token}')
                                     )
         self.assertEqual(resp.status_code, 200)
         data = json.loads(resp.data)
@@ -1047,11 +1050,13 @@ class TestShoppingListByID(BaseTests):
         resp = self.test_client.put("/api/v1/shoppinglists/1",
                                     data={"name": "furniture",
                                           "notify date": "20yy-07-07"},
-                                    headers=dict(Authorization=f'Bearer {token}')
+                                    headers=dict(
+                                        Authorization=f'Bearer {token}')
                                     )
         self.assertEqual(resp.status_code, 400)
         data = json.loads(resp.data)
-        self.assertEqual(data['message'], "dates must be specified as strings but with integer values")
+        self.assertEqual(
+            data['message'], "dates must be specified as strings but with integer values")
 
     def test_put_fails_if_list_id_is_not_an_integer(self):
         # Register a User

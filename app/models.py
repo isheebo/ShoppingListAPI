@@ -76,7 +76,7 @@ class User(db.Model, BaseModel):
             return payload['sub'], None
 
         except jwt.DecodeError:
-            return None, "failed to decode the given token"
+            return None, "the given token is invalid. please re-login"
 
         except jwt.ExpiredSignatureError:
             return None, "the token has expired: please re-login"
