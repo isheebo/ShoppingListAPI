@@ -91,12 +91,16 @@ class ShoppingListAPI(MethodView):
         next_page = None
         if pg_object.has_next:
             next_page = "/api/v1/shoppinglists?page={0}{1}{2}".format(
-                pg_object.next_num, '' if per_page == 20 else f'&limit={per_page}', '' if search_query is None else f'&q={search_query}')
+                pg_object.next_num,
+                '' if per_page == 20 else f'&limit={per_page}',
+                '' if search_query is None else f'&q={search_query}')
 
         previous_page = None
         if pg_object.has_prev:
             previous_page = "/api/v1/shoppinglists?page={0}{1}{2}".format(
-                pg_object.prev_num, '' if per_page == 20 else f'&limit={per_page}', '' if search_query is None else f'&q={search_query}')
+                pg_object.prev_num,
+                '' if per_page == 20 else f'&limit={per_page}',
+                '' if search_query is None else f'&q={search_query}')
 
         shoppinglists = []
         for shoppinglist in pg_object.items:
