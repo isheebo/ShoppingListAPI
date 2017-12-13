@@ -13,7 +13,6 @@ class TestRegisterUserAPI(BaseTests):
         self.assertEqual(data["status"], "success")
 
     def test_user_registration_fails_if_both_email_and_password_are_not_given(self):
-        # no data attached on requests
         resp = self.test_client.post("/api/v1/auth/register")
         self.assertEqual(resp.status_code, 400)
         data = json.loads(resp.data)
@@ -30,13 +29,8 @@ class TestRegisterUserAPI(BaseTests):
         self.assertEqual(data["status"], "failure")
 
     def test_user_registration_fails_if_user_with_email_already_exists(self):
-        resp = self.test_client.post(
+        _ = self.test_client.post(
             "/api/v1/auth/register", data=self.user_data)
-        self.assertEqual(resp.status_code, 201)
-        data = json.loads(resp.data)
-        self.assertEqual(
-            data["message"], "user with email 'testor@example.com' has been registered")
-        self.assertEqual(data["status"], "success")
 
         resp = self.test_client.post(
             "/api/v1/auth/register", data=dict(email='testor@example.com', password="Squ3@Ler"))
