@@ -576,55 +576,32 @@ class TestItemsAPIByID(BaseTests):
             data["message"], "Authentication Header is poorly formatted. The acceptable format is `Bearer <jwt_token>`")
 
     def test_delete_item_at_id_is_successful_given_a_list_and_item_id(self):
-        # Register a User
-        resp = self.test_client.post(
-            "/api/v1/auth/register", data=self.user_data)
-        self.assertEqual(resp.status_code, 201)
-        data = json.loads(resp.data)
-        self.assertEqual(
-            data["message"], "user with email 'testor@example.com' has been registered")
-        self.assertEqual(data["status"], "success")
+        _ = self.test_client.post("/api/v1/auth/register", data=self.user_data)
 
-        # Login a User
         resp = self.test_client.post("/api/v1/auth/login", data=self.user_data)
-        self.assertEqual(resp.status_code, 200)
         data = json.loads(resp.data)
-        self.assertEqual(
-            data["message"], "Login successful for 'testor@example.com'")
-        self.assertEqual(data["status"], "success")
         self.assertIsNotNone(data["token"])
 
         token = data["token"]
 
-        # Add a shoppinglist to a user
-        resp = self.test_client.post("/api/v1/shoppinglists",
-                                     data={"name": "groceries",
-                                           "notify date": "2018-03-14"},
-                                     headers=dict(Authorization=f'Bearer {token}'))
-        self.assertEqual(resp.status_code, 201)
-        data = json.loads(resp.data)
-        self.assertEqual(data["message"], "'groceries' successfully created")
-        self.assertEqual(data["status"], "success")
+        _ = self.test_client.post("/api/v1/shoppinglists",
+                                  data={"name": "groceries",
+                                        "notify date": "2018-2-13"},
+                                  headers=dict(Authorization=f'Bearer {token}'))
 
-        # add 'beans' to the shoppinglist 'groceries'
-        resp = self.test_client.post("/api/v1/shoppinglists/1/items",
-                                     data=dict(name="beans", price='3,500/=',
-                                               quantity='1 kg'),
-                                     headers=dict(Authorization=f'Bearer {token}'))
-        self.assertEqual(resp.status_code, 201)
-        data = json.loads(resp.data)
-        self.assertEqual(data["message"], "'beans' has been added")
-        self.assertEqual(data['status'], 'success')
+        _ = self.test_client.post("/api/v1/shoppinglists",
+                                  data={"name": "groceries", "notify date": "2018-03-14"},
+                                  headers=dict(Authorization=f'Bearer {token}'))
 
-        # add 'carrots' to the list
-        resp = self.test_client.post("/api/v1/shoppinglists/1/items",
-                                     data=dict(name="carrots", price='4,000/=',
-                                               quantity='10'),
-                                     headers=dict(Authorization=f'Bearer {token}'))
-        self.assertEqual(resp.status_code, 201)
-        data = json.loads(resp.data)
-        self.assertEqual(data["message"], "'carrots' has been added")
-        self.assertEqual(data['status'], 'success')
+        _ = self.test_client.post("/api/v1/shoppinglists/1/items",
+                                  data=dict(name="beans", price='3,500/=',
+                                            quantity='1 kg'),
+                                  headers=dict(Authorization=f'Bearer {token}'))
+
+        _ = self.test_client.post("/api/v1/shoppinglists/1/items",
+                                  data=dict(name="carrots", price='4,000/=',
+                                            quantity='10'),
+                                  headers=dict(Authorization=f'Bearer {token}'))
 
         # delete the carrots item on the 'groceries' list
         resp = self.test_client.delete(
@@ -638,55 +615,22 @@ class TestItemsAPIByID(BaseTests):
             data['message'], 'an item with ID 2 has been successfully deleted')
 
     def test_delete_item_at_id_fails_if_item_id_is_not_an_integer(self):
-        # Register a User
-        resp = self.test_client.post(
-            "/api/v1/auth/register", data=self.user_data)
-        self.assertEqual(resp.status_code, 201)
-        data = json.loads(resp.data)
-        self.assertEqual(
-            data["message"], "user with email 'testor@example.com' has been registered")
-        self.assertEqual(data["status"], "success")
+        _ = self.test_client.post("/api/v1/auth/register", data=self.user_data)
 
-        # Login a User
         resp = self.test_client.post("/api/v1/auth/login", data=self.user_data)
-        self.assertEqual(resp.status_code, 200)
         data = json.loads(resp.data)
-        self.assertEqual(
-            data["message"], "Login successful for 'testor@example.com'")
-        self.assertEqual(data["status"], "success")
         self.assertIsNotNone(data["token"])
 
         token = data["token"]
 
-        # Add a shoppinglist to a user
-        resp = self.test_client.post("/api/v1/shoppinglists",
-                                     data={"name": "groceries",
-                                           "notify date": "2018-03-14"},
-                                     headers=dict(Authorization=f'Bearer {token}'))
-        self.assertEqual(resp.status_code, 201)
-        data = json.loads(resp.data)
-        self.assertEqual(data["message"], "'groceries' successfully created")
-        self.assertEqual(data["status"], "success")
+        _ = self.test_client.post("/api/v1/shoppinglists",
+                                  data={"name": "groceries",
+                                        "notify date": "2018-2-13"},
+                                  headers=dict(Authorization=f'Bearer {token}'))
 
-        # add 'beans' to the shoppinglist 'groceries'
-        resp = self.test_client.post("/api/v1/shoppinglists/1/items",
-                                     data=dict(name="beans",
-                                               price='3,500/=', quantity='1 kg'),
-                                     headers=dict(Authorization=f'Bearer {token}'))
-        self.assertEqual(resp.status_code, 201)
-        data = json.loads(resp.data)
-        self.assertEqual(data["message"], "'beans' has been added")
-        self.assertEqual(data['status'], 'success')
-
-        # add 'carrots' to the list
-        resp = self.test_client.post("/api/v1/shoppinglists/1/items",
-                                     data=dict(name="carrots", price='4,000/=',
-                                               quantity='10'),
-                                     headers=dict(Authorization=f'Bearer {token}'))
-        self.assertEqual(resp.status_code, 201)
-        data = json.loads(resp.data)
-        self.assertEqual(data["message"], "'carrots' has been added")
-        self.assertEqual(data['status'], 'success')
+        _ = self.test_client.post("/api/v1/shoppinglists",
+                                  data={"name": "groceries", "notify date": "2018-03-14"},
+                                  headers=dict(Authorization=f'Bearer {token}'))
 
         resp = self.test_client.delete(
             "/api/v1/shoppinglists/1/items/testing",
@@ -697,55 +641,13 @@ class TestItemsAPIByID(BaseTests):
         self.assertEqual(data['message'], "item IDs must be integers")
 
     def test_delete_item_at_id_fails_if_list_id_is_not_an_integer(self):
-        # Register a User
-        resp = self.test_client.post(
-            "/api/v1/auth/register", data=self.user_data)
-        self.assertEqual(resp.status_code, 201)
-        data = json.loads(resp.data)
-        self.assertEqual(
-            data["message"], "user with email 'testor@example.com' has been registered")
-        self.assertEqual(data["status"], "success")
+        _ = self.test_client.post("/api/v1/auth/register", data=self.user_data)
 
-        # Login a User
         resp = self.test_client.post("/api/v1/auth/login", data=self.user_data)
-        self.assertEqual(resp.status_code, 200)
         data = json.loads(resp.data)
-        self.assertEqual(
-            data["message"], "Login successful for 'testor@example.com'")
-        self.assertEqual(data["status"], "success")
         self.assertIsNotNone(data["token"])
 
         token = data["token"]
-
-        # Add a shoppinglist to a user
-        resp = self.test_client.post("/api/v1/shoppinglists",
-                                     data={"name": "groceries",
-                                           "notify date": "2018-03-14"},
-                                     headers=dict(Authorization=f'Bearer {token}'))
-        self.assertEqual(resp.status_code, 201)
-        data = json.loads(resp.data)
-        self.assertEqual(data["message"], "'groceries' successfully created")
-        self.assertEqual(data["status"], "success")
-
-        # add 'beans' to the shoppinglist 'groceries'
-        resp = self.test_client.post("/api/v1/shoppinglists/1/items",
-                                     data=dict(name="beans", price='3,500/=',
-                                               quantity='1 kg'),
-                                     headers=dict(Authorization=f'Bearer {token}'))
-        self.assertEqual(resp.status_code, 201)
-        data = json.loads(resp.data)
-        self.assertEqual(data["message"], "'beans' has been added")
-        self.assertEqual(data['status'], 'success')
-
-        # add 'carrots' to the list
-        resp = self.test_client.post("/api/v1/shoppinglists/1/items",
-                                     data=dict(name="carrots", price='4,000/=',
-                                               quantity='10'),
-                                     headers=dict(Authorization=f'Bearer {token}'))
-        self.assertEqual(resp.status_code, 201)
-        data = json.loads(resp.data)
-        self.assertEqual(data["message"], "'carrots' has been added")
-        self.assertEqual(data['status'], 'success')
 
         resp = self.test_client.delete(
             "/api/v1/shoppinglists/testing/items/2",
@@ -756,55 +658,23 @@ class TestItemsAPIByID(BaseTests):
         self.assertEqual(data['message'], "shopping list IDs must be integers")
 
     def test_delete_item_at_id_fails_if_item_id_is_an_integer_but_non_existent_in_list(self):
-        # Register a User
-        resp = self.test_client.post(
-            "/api/v1/auth/register", data=self.user_data)
-        self.assertEqual(resp.status_code, 201)
-        data = json.loads(resp.data)
-        self.assertEqual(
-            data["message"], "user with email 'testor@example.com' has been registered")
-        self.assertEqual(data["status"], "success")
+        _ = self.test_client.post("/api/v1/auth/register", data=self.user_data)
 
-        # Login a User
         resp = self.test_client.post("/api/v1/auth/login", data=self.user_data)
-        self.assertEqual(resp.status_code, 200)
         data = json.loads(resp.data)
-        self.assertEqual(
-            data["message"], "Login successful for 'testor@example.com'")
-        self.assertEqual(data["status"], "success")
         self.assertIsNotNone(data["token"])
 
         token = data["token"]
 
-        # Add a shoppinglist to a user
-        resp = self.test_client.post("/api/v1/shoppinglists",
-                                     data={"name": "groceries",
-                                           "notify date": "2018-03-14"},
-                                     headers=dict(Authorization=f'Bearer {token}'))
-        self.assertEqual(resp.status_code, 201)
-        data = json.loads(resp.data)
-        self.assertEqual(data["message"], "'groceries' successfully created")
-        self.assertEqual(data["status"], "success")
+        _ = self.test_client.post("/api/v1/shoppinglists",
+                                  data={"name": "groceries",
+                                        "notify date": "2018-2-13"},
+                                  headers=dict(Authorization=f'Bearer {token}'))
 
-        # add 'beans' to the shoppinglist 'groceries'
-        resp = self.test_client.post("/api/v1/shoppinglists/1/items",
-                                     data=dict(name="beans", price='3,500/=',
-                                               quantity='1 kg'),
-                                     headers=dict(Authorization=f'Bearer {token}'))
-        self.assertEqual(resp.status_code, 201)
-        data = json.loads(resp.data)
-        self.assertEqual(data["message"], "'beans' has been added")
-        self.assertEqual(data['status'], 'success')
-
-        # add 'carrots' to the list
-        resp = self.test_client.post("/api/v1/shoppinglists/1/items",
-                                     data=dict(name="carrots", price='4,000/=',
-                                               quantity='10'),
-                                     headers=dict(Authorization=f'Bearer {token}'))
-        self.assertEqual(resp.status_code, 201)
-        data = json.loads(resp.data)
-        self.assertEqual(data["message"], "'carrots' has been added")
-        self.assertEqual(data['status'], 'success')
+        _ = self.test_client.post("/api/v1/shoppinglists/1/items",
+                                  data=dict(name="beans", price='3,500/=',
+                                            quantity='1 kg'),
+                                  headers=dict(Authorization=f'Bearer {token}'))
 
         resp = self.test_client.delete(
             "/api/v1/shoppinglists/1/items/200", headers=dict(Authorization=f'Bearer {token}'))
@@ -814,59 +684,16 @@ class TestItemsAPIByID(BaseTests):
         self.assertEqual(data['message'], "item with that ID cannot be found!")
 
     def test_delete_item_at_id_fails_if_list_id_is_non_existent_in_db(self):
-        # Register a User
-        resp = self.test_client.post(
-            "/api/v1/auth/register", data=self.user_data)
-        self.assertEqual(resp.status_code, 201)
-        data = json.loads(resp.data)
-        self.assertEqual(
-            data["message"], "user with email 'testor@example.com' has been registered")
-        self.assertEqual(data["status"], "success")
+        _ = self.test_client.post("/api/v1/auth/register", data=self.user_data)
 
-        # Login a User
         resp = self.test_client.post("/api/v1/auth/login", data=self.user_data)
-        self.assertEqual(resp.status_code, 200)
         data = json.loads(resp.data)
-        self.assertEqual(
-            data["message"], "Login successful for 'testor@example.com'")
-        self.assertEqual(data["status"], "success")
         self.assertIsNotNone(data["token"])
 
         token = data["token"]
 
-        # Add a shoppinglist to a user
-        resp = self.test_client.post("/api/v1/shoppinglists",
-                                     data={"name": "groceries",
-                                           "notify date": "2018-03-14"},
-                                     headers=dict(Authorization=f'Bearer {token}'))
-        self.assertEqual(resp.status_code, 201)
-        data = json.loads(resp.data)
-        self.assertEqual(data["message"], "'groceries' successfully created")
-        self.assertEqual(data["status"], "success")
-
-        # add 'beans' to the shoppinglist 'groceries'
-        resp = self.test_client.post("/api/v1/shoppinglists/1/items",
-                                     data=dict(name="beans", price='3,500/=',
-                                               quantity='1 kg'),
-                                     headers=dict(Authorization=f'Bearer {token}'))
-        self.assertEqual(resp.status_code, 201)
-        data = json.loads(resp.data)
-        self.assertEqual(data["message"], "'beans' has been added")
-        self.assertEqual(data['status'], 'success')
-
-        # add 'carrots' to the list
-        resp = self.test_client.post("/api/v1/shoppinglists/1/items",
-                                     data=dict(name="carrots", price='4,000/=',
-                                               quantity='10'),
-                                     headers=dict(Authorization=f'Bearer {token}'))
-        self.assertEqual(resp.status_code, 201)
-        data = json.loads(resp.data)
-        self.assertEqual(data["message"], "'carrots' has been added")
-        self.assertEqual(data['status'], 'success')
-
-        resp = self.test_client.delete(
-            "/api/v1/shoppinglists/100/items/1",
-            headers=dict(Authorization=f'Bearer {token}'))
+        resp = self.test_client.delete("/api/v1/shoppinglists/100/items/1",
+                                       headers=dict(Authorization=f'Bearer {token}'))
         self.assertEqual(resp.status_code, 404)
         data = json.loads(resp.data)
         self.assertEqual(data['status'], 'failure')
@@ -882,45 +709,13 @@ class TestItemsAPIByID(BaseTests):
             data["message"], 'Authorization header must be set for a successful request')
 
     def test_delete_item_at_id_fails_if_authorization_header_is_present_but_poorly_formatted(self):
-        # Register a User
-        resp = self.test_client.post(
-            "/api/v1/auth/register", data=self.user_data)
-        self.assertEqual(resp.status_code, 201)
-        data = json.loads(resp.data)
-        self.assertEqual(
-            data["message"], "user with email 'testor@example.com' has been registered")
-        self.assertEqual(data["status"], "success")
+        _ = self.test_client.post("/api/v1/auth/register", data=self.user_data)
 
-        # Login a User
         resp = self.test_client.post("/api/v1/auth/login", data=self.user_data)
-        self.assertEqual(resp.status_code, 200)
         data = json.loads(resp.data)
-        self.assertEqual(
-            data["message"], "Login successful for 'testor@example.com'")
-        self.assertEqual(data["status"], "success")
         self.assertIsNotNone(data["token"])
 
         token = data["token"]
-
-        # Add a shoppinglist to a user
-        resp = self.test_client.post("/api/v1/shoppinglists",
-                                     data={"name": "groceries",
-                                           "notify date": "2018-03-14"},
-                                     headers=dict(Authorization=f'Bearer {token}'))
-        self.assertEqual(resp.status_code, 201)
-        data = json.loads(resp.data)
-        self.assertEqual(data["message"], "'groceries' successfully created")
-        self.assertEqual(data["status"], "success")
-
-        # add 'beans' to the shoppinglist 'groceries'
-        resp = self.test_client.post("/api/v1/shoppinglists/1/items",
-                                     data=dict(name="beans", price='3,500/=',
-                                               quantity='1 kg'),
-                                     headers=dict(Authorization=f'Bearer {token}'))
-        self.assertEqual(resp.status_code, 201)
-        data = json.loads(resp.data)
-        self.assertEqual(data["message"], "'beans' has been added")
-        self.assertEqual(data['status'], 'success')
 
         resp = self.test_client.delete(
             "/api/v1/shoppinglists/1/items/1", headers=dict(Authorization=f'Bearers {token}'))
