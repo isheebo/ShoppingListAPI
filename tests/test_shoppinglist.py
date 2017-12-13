@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 import time
 from tests import BaseTests
 
@@ -63,6 +64,129 @@ class TestShoppingListAPI(BaseTests):
         data = json.loads(resp.data)
         self.assertEqual(
             data['message'], "dates must be specified as strings but with integer values")
+
+    def test_post_shoppinglist_fails_for_a_notify_date_with_year_before_today(self):
+        # Register a User
+        resp = self.test_client.post(
+            "/api/v1/auth/register", data=self.user_data)
+        self.assertEqual(resp.status_code, 201)
+        data = json.loads(resp.data)
+        self.assertEqual(
+            data["message"], "user with email 'testor@example.com' has been registered")
+        self.assertEqual(data["status"], "success")
+
+        # Login a User
+
+        resp = self.test_client.post("/api/v1/auth/login", data=self.user_data)
+        self.assertEqual(resp.status_code, 200)
+        data = json.loads(resp.data)
+        self.assertEqual(
+            data["message"], "Login successful for 'testor@example.com'")
+        self.assertEqual(data["status"], "success")
+        self.assertIsNotNone(data["token"])
+
+        request_data = {"name": "groceries", "notify date": "1000-03-14"}
+        # Add a shoppinglist to a user
+        resp = self.test_client.post("/api/v1/shoppinglists",
+                                     data=request_data,
+                                     headers=dict(Authorization=f'Bearer {data["token"]}'))
+        self.assertEqual(resp.status_code, 400)
+        data = json.loads(resp.data)
+        self.assertEqual(
+            data['message'], "The year {} already passed, please use "
+                             "a valid year".format(request_data["notify date"].split("-")[0]))
+
+    def test_post_shoppinglist_fails_for_a_notify_date_with_year_beyond_2100(self):
+        # Register a User
+        resp = self.test_client.post(
+            "/api/v1/auth/register", data=self.user_data)
+        self.assertEqual(resp.status_code, 201)
+        data = json.loads(resp.data)
+        self.assertEqual(
+            data["message"], "user with email 'testor@example.com' has been registered")
+        self.assertEqual(data["status"], "success")
+
+        # Login a User
+
+        resp = self.test_client.post("/api/v1/auth/login", data=self.user_data)
+        self.assertEqual(resp.status_code, 200)
+        data = json.loads(resp.data)
+        self.assertEqual(
+            data["message"], "Login successful for 'testor@example.com'")
+        self.assertEqual(data["status"], "success")
+        self.assertIsNotNone(data["token"])
+
+        request_data = {"name": "groceries", "notify date": "2110-03-14"}
+        # Add a shoppinglist to a user
+        resp = self.test_client.post("/api/v1/shoppinglists",
+                                     data=request_data,
+                                     headers=dict(Authorization=f'Bearer {data["token"]}'))
+        self.assertEqual(resp.status_code, 400)
+        data = json.loads(resp.data)
+        self.assertEqual(
+            data['message'], "By {}, you may be in afterlife, please consider years in "
+                             "range (2017-2099)".format(request_data["notify date"].split("-")[0]),
+            datetime.today().year)
+
+    def test_post_shoppinglist_fails_for_a_notify_date_with_current_year_but_a_month_that_has_already_passed(self):
+        # Register a User
+        resp = self.test_client.post(
+            "/api/v1/auth/register", data=self.user_data)
+        self.assertEqual(resp.status_code, 201)
+        data = json.loads(resp.data)
+        self.assertEqual(
+            data["message"], "user with email 'testor@example.com' has been registered")
+        self.assertEqual(data["status"], "success")
+
+        # Login a User
+
+        resp = self.test_client.post("/api/v1/auth/login", data=self.user_data)
+        self.assertEqual(resp.status_code, 200)
+        data = json.loads(resp.data)
+        self.assertEqual(
+            data["message"], "Login successful for 'testor@example.com'")
+        self.assertEqual(data["status"], "success")
+        self.assertIsNotNone(data["token"])
+
+        request_data = {"name": "groceries", "notify date": "2017-03-14"}
+        # Add a shoppinglist to a user
+        resp = self.test_client.post("/api/v1/shoppinglists",
+                                     data=request_data,
+                                     headers=dict(Authorization=f'Bearer {data["token"]}'))
+        self.assertEqual(resp.status_code, 400)
+        data = json.loads(resp.data)
+        self.assertEqual(
+            data['message'], "Invalid date, March 2017 has already passed by")
+
+    def test_post_fails_for_a_notify_date_with_current_year_and_month_but_date_that_has_already_passed(self):
+        # Register a User
+        resp = self.test_client.post(
+            "/api/v1/auth/register", data=self.user_data)
+        self.assertEqual(resp.status_code, 201)
+        data = json.loads(resp.data)
+        self.assertEqual(
+            data["message"], "user with email 'testor@example.com' has been registered")
+        self.assertEqual(data["status"], "success")
+
+        # Login a User
+
+        resp = self.test_client.post("/api/v1/auth/login", data=self.user_data)
+        self.assertEqual(resp.status_code, 200)
+        data = json.loads(resp.data)
+        self.assertEqual(
+            data["message"], "Login successful for 'testor@example.com'")
+        self.assertEqual(data["status"], "success")
+        self.assertIsNotNone(data["token"])
+
+        request_data = {"name": "groceries", "notify date": "2017-12-01"}
+        # Add a shoppinglist to a user
+        resp = self.test_client.post("/api/v1/shoppinglists",
+                                     data=request_data,
+                                     headers=dict(Authorization=f'Bearer {data["token"]}'))
+        self.assertEqual(resp.status_code, 400)
+        data = json.loads(resp.data)
+        self.assertEqual(
+            data['message'], "Use dates starting from {}".format(datetime.now().strftime("%d/%m/%Y")))
 
     def test_post_shopping_list_fails_if_token_has_already_expired(self):
         # Register a User

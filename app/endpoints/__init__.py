@@ -84,11 +84,32 @@ def parse_notify_date(date_string):
         year = int(split_date[0])
         month = int(split_date[1])
         day = int(split_date[2])
-        # To deal with cases where the date is improper,
-        # such as 31st February or 100th January
+
+        today_year = datetime.today().year
+        today_month = datetime.today().month
+        today_day = datetime.today().day
+
         try:
-            x = str(datetime.strptime(f"{year}-{month}-{day}", "%Y-%m-%d"))
-            return x.split()[0], "success"
+            formed_date = datetime.strptime(
+                f"{year}-{month}-{day}", "%Y-%m-%d")
+            month_string = formed_date.strftime("%B")
+
+            if year < today_year:
+                return None, f"The year {year} already passed, please use a valid year"
+
+            if year > 2100:
+                return None, "By {0}, you may be in afterlife, please "\
+                    "consider years in range ({1}-2099)".format(year,
+                                                                today_year)
+
+            if year == datetime.today().year and month < datetime.today().month:
+                return None, f"Invalid date, {month_string} {today_year} has already passed by"
+
+            if year == today_year and month == today_month and day < today_day:
+                return None, "Use dates starting from {}".format(datetime.now().strftime("%d/%m/%Y"))
+
+            return str(formed_date).split()[0], "success"
+
         except ValueError:
             return None, "The given date is invalid and doesn't exist on the calendar"
     except ValueError:
