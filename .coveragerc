@@ -1,0 +1,7 @@
+[run]
+omit =]
+    *docs*
+    *migrations*
+    */manage.py
+    */test*.py
+    */local_settings.py
