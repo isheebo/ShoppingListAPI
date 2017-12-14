@@ -110,7 +110,8 @@ class ShoppingList(db.Model, BaseModel):
 
     name = Column(String, nullable=False)
     notify_date = Column(Date, nullable=False)
-    items = db.relationship('Item', order_by="Item.id", lazy="dynamic")
+    items = db.relationship('Item', order_by="Item.id",
+                            cascade="all, delete-orphan")
 
     date_created = Column(DateTime, default=datetime.now())
     date_modified = Column(DateTime, default=datetime.now())
