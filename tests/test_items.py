@@ -396,7 +396,6 @@ class TestItemsAPIByID(BaseTests):
         # Login a User
         resp = self.test_client.post("/api/v1/auth/login", data=self.user_data)
         data = json.loads(resp.data)
-        self.assertIsNotNone(data["token"])
 
         token = data["token"]
 
