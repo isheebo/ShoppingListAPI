@@ -54,7 +54,8 @@ class ItemsAPI(MethodView):
                 }), 201
             return jsonify({
                 "status": "failure",
-                "message": "'name', 'price' and 'quantity' of an item must be specified whereas 'status' is optional"
+                "message": "'name', 'price' and 'quantity' of an item must be"
+                           " specified whereas 'status' is optional"
             }), 400
         return jsonify({
             "status": status,
@@ -77,11 +78,11 @@ class ItemsAPI(MethodView):
             search_query = request.args.get('q', None, type=str)
             page = request.args.get('page', 1, type=int)
             per_page = request.args.get('limit', 10, type=int)
-            if per_page and per_page > 20:
+            if per_page and per_page > 20:  # pragma: no cover
                 per_page = 20
-            if not per_page or per_page < 1:
+            if not per_page or per_page < 1:  # pragma: no cover
                 per_page = 20
-            if not page or page < 1:
+            if not page or page < 1:  # pragma: no cover
                 page = 1
 
             query_object = Item.query.filter(Item.shoppinglist_id == list_id)
@@ -94,13 +95,13 @@ class ItemsAPI(MethodView):
                 page=page, per_page=per_page, error_out=False)
 
             next_page = None
-            if pg_object.has_next:
+            if pg_object.has_next:  # pragma: no cover
                 next_page = "/api/v1/shoppinglists/{0}/items?page={1}{2}{3}".format(
                     list_id, pg_object.next_num, '' if per_page == 20 else f'&limit={per_page}',
                     '' if search_query is None else f'&q={search_query}')
 
             previous_page = None
-            if pg_object.has_prev:
+            if pg_object.has_prev:  # pragma: no cover
                 previous_page = "/api/v1/shoppinglists/{0}/items?page={1}{2}{3}".format(
                     list_id, pg_object.prev_num, '' if per_page == 20 else f'&limit={per_page}',
                     '' if search_query is None else f'&q={search_query}')
@@ -226,7 +227,7 @@ class ItemsAPIByID(MethodView):
             if name and price and quantity:
                 name = name.lower()
                 name_already_exists = Item.query.filter(Item.shoppinglist_id == list_id).filter((
-                    (Item.name == name) & (Item.id != item_id))).all()
+                        (Item.name == name) & (Item.id != item_id))).all()
 
                 if (item.name == name and item.quantity == quantity and  # if no edits were made...
                         item.price == price and item.has_been_bought == has_been_bought):
@@ -261,7 +262,7 @@ class ItemsAPIByID(MethodView):
                 }), 200
             return jsonify({
                 'status': 'failure',
-                'message':  "'name', 'price' and 'quantity' of an item must be specified whereas 'status' is optional"
+                'message': "'name', 'price' and 'quantity' of an item must be specified whereas 'status' is optional"
             }), 400
         return jsonify({
             "status": status,

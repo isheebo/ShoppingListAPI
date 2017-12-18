@@ -71,11 +71,11 @@ class ShoppingListAPI(MethodView):
         search_query = request.args.get('q', None, type=str)
         page = request.args.get('page', 1, type=int)
         per_page = request.args.get('limit', 10, type=int)
-        if per_page and per_page > 20:
+        if per_page and per_page > 20:  # pragma: no cover
             per_page = 20
-        if not per_page or per_page < 1:
+        if not per_page or per_page < 1:  # pragma: no cover
             per_page = 20
-        if not page or page < 1:
+        if not page or page < 1:  # pragma: no cover
             page = 1
 
         query_object = ShoppingList.query.filter(
