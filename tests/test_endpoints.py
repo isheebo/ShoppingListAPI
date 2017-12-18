@@ -3,9 +3,6 @@ from app.endpoints import parse_notify_date
 
 
 class TestEndpoints(BaseTests):
-    def setUp(self):
-        super(TestEndpoints, self).setUp()
-
     def test_parse_notify_date_fails_if_length_is_not_3(self):
         possible_cases = ["2017-02", "", "2018/02/12", "2018-09-8-3"]
 

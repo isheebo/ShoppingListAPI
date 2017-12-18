@@ -3,9 +3,6 @@ from tests import BaseTests
 
 
 class TestItemsAPI(BaseTests):
-    def setUp(self):
-        super(TestItemsAPI, self).setUp()
-
     def test_post_item_is_successful_if_all_parameters_are_given(self):
         self.test_client.post(
             "/api/v1/auth/register", data=self.user_data)
@@ -406,9 +403,6 @@ class TestItemsAPI(BaseTests):
 
 
 class TestItemsAPIByID(BaseTests):
-    def setup(self):
-        super(TestItemsAPIByID, self).setUp()
-
     def test_get_item_by_id_is_successful_for_a_given_list_and_item_id(self):
         self.test_client.post("/api/v1/auth/register", data=self.user_data)
 
