@@ -20,7 +20,7 @@ before_script:
 
 # command to run tests
 script:
-  - nosetests -v --rednose --with-coverage --cover-package=app
+  - nosetests -v --rednose --with-coverage --cover-package=.
 
 after_success:
   - coveralls
