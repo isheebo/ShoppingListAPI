@@ -489,9 +489,6 @@ class TestShoppingListAPI(BaseTests):
 
 
 class TestShoppingListByID(BaseTests):
-    def setUp(self):
-        super(TestShoppingListByID, self).setUp()
-
     def test_get_shopping_list_by_id_is_successful(self):
         self.test_client.post("/api/v1/auth/register", data=self.user_data)
 
