@@ -20,7 +20,7 @@ class BaseModel:
             db.session.add(self)
             db.session.commit()
             has_been_saved = True
-        except (RuntimeError, psycopg2.Error):
+        except (RuntimeError, psycopg2.Error):  # pragma: no cover
             db.session.rollback()
         return has_been_saved
 
@@ -32,7 +32,7 @@ class BaseModel:
             db.session.delete(self)
             db.session.commit()
             is_deleted = True
-        except (RuntimeError, psycopg2.Error):
+        except (RuntimeError, psycopg2.Error):  # pragma: no cover
             db.session.rollback()
         return is_deleted
 
@@ -63,7 +63,7 @@ class User(db.Model, BaseModel):
                                 timedelta(seconds=current_app.config['AUTH_EXPIRY_TIME_IN_SECONDS'])),
                            sub=user_id)
             return jwt.encode(payload=payload, key=current_app.config['SECRET_KEY'], algorithm='HS256')
-        except (NotImplementedError, KeyError):
+        except (NotImplementedError, KeyError):  # pragma: no cover
             pass
 
     @staticmethod

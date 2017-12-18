@@ -42,5 +42,5 @@ class TestProductionConfiguration(unittest.TestCase):
             self.test_app.config['AUTH_EXPIRY_TIME_IN_SECONDS'], 86400)
         self.assertIsNone(
             self.test_app.config['SQLALCHEMY_DATABASE_URI'])
-        self.assertEqual(self.test_app.config['SQLALCHEMY_DATABASE_URI'], os.getenv(
-            'DATABASE_URL'))
+        self.assertEqual(self.test_app.config['SQLALCHEMY_DATABASE_URI'],
+                         os.getenv('DATABASE_URL'))
