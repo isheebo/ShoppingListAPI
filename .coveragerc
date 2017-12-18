@@ -2,6 +2,8 @@
 omit =]
     *docs*
     *migrations*
+    *virtualenv*
     */manage.py
     */test*.py
     */local_settings.py
+    */settings.py
