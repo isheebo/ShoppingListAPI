@@ -43,7 +43,7 @@ class TestModels(unittest.TestCase):
         self.assertEqual(user_id, user.id)
         self.assertIsNone(err)
 
-    def test_token_verification_fails_if_the_token_is_already_blacklisted(self):
+    def test_verify_token_fails_if_the_token_is_already_blacklisted(self):
         self.assertTrue(self.user.save())
         user = User.query.filter_by(email=self.user.email).first()
         self.assertIsNotNone(user)
