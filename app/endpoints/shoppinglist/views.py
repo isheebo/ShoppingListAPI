@@ -2,7 +2,8 @@ from datetime import datetime
 from flask import Blueprint, request, jsonify
 from flask.views import MethodView
 
-from app.endpoints import parse_auth_header, get_shoppinglist, parse_notify_date
+from app.endpoints import (
+    parse_auth_header, get_shoppinglist, parse_notify_date)
 from app.models import ShoppingList
 
 list_blueprint = Blueprint("list_blueprint", __name__, url_prefix="/api/v1")
@@ -29,7 +30,8 @@ class ShoppingListAPI(MethodView):
         if name and notify_date:
             name = name.lower()
             name_already_exists = ShoppingList.query.filter(
-                ShoppingList.user_id == user_id).filter(ShoppingList.name == name).all()
+                ShoppingList.user_id == user_id).filter(
+                    ShoppingList.name == name).all()
             if name_already_exists:
                 return jsonify({
                     "status": "failure",
@@ -58,7 +60,8 @@ class ShoppingListAPI(MethodView):
     def get():
         """
         Returns the shoppinglists that are owned by the logged in user.
-        The lists returned depend on whether there were any specified query parameters.
+        The lists returned depend on whether there were any specified
+        query parameters.
         """
         user_id, message, status, status_code, _ = parse_auth_header(request)
         if user_id is None:
@@ -206,8 +209,10 @@ class ShoppingListByID(MethodView):
 
             if name and notify_date:
                 name = name.lower()
-                name_already_exists = ShoppingList.query.filter(ShoppingList.user_id == user_id).filter((
-                    (ShoppingList.name == name) & (ShoppingList.id != list_id))).all()
+                name_already_exists = ShoppingList.query.filter(
+                    ShoppingList.user_id == user_id).filter(
+                        ((ShoppingList.name == name) &
+                         (ShoppingList.id != list_id))).all()
 
                 date_string, message = parse_notify_date(notify_date)
                 if date_string is None:
@@ -216,13 +221,14 @@ class ShoppingListByID(MethodView):
                         "message": message,
                     }), 400
 
-                if shoppinglist.name == name and shoppinglist.notify_date.strftime("%Y-%m-%d") == date_string:
+                stored_date = shoppinglist.notify_date.strftime("%Y-%m-%d")
+                if shoppinglist.name == name and stored_date == date_string:
                     return jsonify({
                         "status": "failure",
                         "message": "No changes were made to the list"
                     }), 200
 
-                if name_already_exists:  # if name already exists and is not the current shopping list name, then do:-
+                if name_already_exists:
                     return jsonify({
                         "status": "failure",
                         "message": f"a shopping list with name '{name}' already exists"
@@ -242,7 +248,6 @@ class ShoppingListByID(MethodView):
                     },
                     "message": "shoppinglist has been successfully edited!"
                 }), 200
-
             return jsonify({
                 "status": "failure",
                 "message": "'name' and 'notify date' of the shoppinglist are required fields"
@@ -259,5 +264,8 @@ shopping_list_by_id = ShoppingListByID.as_view("shopping_list_by_id")
 
 list_blueprint.add_url_rule(
     "/shoppinglists", view_func=shopping_list_api, methods=['POST', 'GET'])
+
 list_blueprint.add_url_rule(
-    "/shoppinglists/<list_id>", view_func=shopping_list_by_id, methods=['GET', 'DELETE', 'PUT'])
+    "/shoppinglists/<list_id>",
+    view_func=shopping_list_by_id,
+    methods=['GET', 'DELETE', 'PUT'])

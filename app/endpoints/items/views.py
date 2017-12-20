@@ -226,17 +226,20 @@ class ItemsAPIByID(MethodView):
 
             if name and price and quantity:
                 name = name.lower()
-                name_already_exists = Item.query.filter(Item.shoppinglist_id == list_id).filter((
+                name_already_exists = Item.query.filter(
+                    Item.shoppinglist_id == list_id).filter((
                         (Item.name == name) & (Item.id != item_id))).all()
 
-                if (item.name == name and item.quantity == quantity and  # if no edits were made...
-                        item.price == price and item.has_been_bought == has_been_bought):
+                # if no edits were made...
+                if (item.name == name and item.quantity == quantity and
+                        item.price == price and
+                        item.has_been_bought == has_been_bought):
                     return jsonify({
                         "status": "failure",
                         "message": "no changes were made to the item"
                     }), 200
 
-                if name_already_exists:  # if name exists and it isn't the current name we are editing
+                if name_already_exists:
                     return jsonify({
                         "status": 'failure',
                         "message": f"an item with name '{name}' already exists"
@@ -276,5 +279,6 @@ items_by_id_api = ItemsAPIByID.as_view("items_by_id_api")
 items.add_url_rule("/shoppinglists/<list_id>/items",
                    view_func=items_api, methods=['POST', 'GET'])
 
-items.add_url_rule("/shoppinglists/<list_id>/items/<item_id>",
-                   view_func=items_by_id_api, methods=['GET', 'DELETE', 'PUT'])
+items.add_url_rule(
+    "/shoppinglists/<list_id>/items/<item_id>",
+    view_func=items_by_id_api, methods=['GET', 'DELETE', 'PUT'])
