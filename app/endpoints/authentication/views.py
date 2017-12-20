@@ -94,7 +94,8 @@ class Login(MethodView):
 class Logout(MethodView):
     @staticmethod
     def post():
-        # Logout works only if a user is logged in and has an authentication token
+        """ User can only logout if and only if a user is
+        logged in and has an authentication token. """
         user_id, msg, status, status_code, token = parse_auth_header(request)
         if user_id is None:
             return jsonify({

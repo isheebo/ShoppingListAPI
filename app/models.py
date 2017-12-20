@@ -2,7 +2,8 @@ from datetime import datetime, timedelta
 
 import psycopg2
 import jwt
-from sqlalchemy import Column, Integer, String, DateTime, Date, ForeignKey, Boolean
+from sqlalchemy import (Column, Integer, String,
+                        DateTime, Date, ForeignKey, Boolean)
 from flask import current_app
 from flask_bcrypt import Bcrypt
 
@@ -46,11 +47,12 @@ class User(db.Model, BaseModel):
     password = Column(String, nullable=False)
     date_added = Column(DateTime, default=datetime.now())
     shoppinglists = db.relationship(
-        'ShoppingList', order_by='ShoppingList.id', cascade='all, delete-orphan')
+        'ShoppingList', order_by='ShoppingList.id',
+        cascade='all, delete-orphan')
 
-    def __init__(self, email, password):
+    def __init__(self, email, pwd):
         self.email = email
-        self.password = Bcrypt().generate_password_hash(password).decode('utf-8')
+        self.password = Bcrypt().generate_password_hash(pwd).decode('utf-8')
 
     def validate_password(self, password):
         return Bcrypt().check_password_hash(self.password, password)
@@ -58,11 +60,15 @@ class User(db.Model, BaseModel):
     @staticmethod
     def generate_token(user_id):
         try:
-            payload = dict(iat=datetime.utcnow(),
-                           exp=(datetime.utcnow() +
-                                timedelta(seconds=current_app.config['AUTH_EXPIRY_TIME_IN_SECONDS'])),
-                           sub=user_id)
-            return jwt.encode(payload=payload, key=current_app.config['SECRET_KEY'], algorithm='HS256')
+            expiry_time = current_app.config['AUTH_EXPIRY_TIME_IN_SECONDS']
+            payload = dict(
+                iat=datetime.utcnow(),
+                exp=(datetime.utcnow() + timedelta(seconds=expiry_time)),
+                sub=user_id)
+            return jwt.encode(
+                payload=payload,
+                key=current_app.config['SECRET_KEY'],
+                algorithm='HS256')
         except (NotImplementedError, KeyError):  # pragma: no cover
             pass
 
@@ -72,7 +78,9 @@ class User(db.Model, BaseModel):
             if BlacklistToken.is_blacklisted(token):
                 return None, "token has already expired: please re-login"
             payload = jwt.decode(
-                token, key=current_app.config['SECRET_KEY'], algorithms=['HS256', 'HS512'])
+                token,
+                key=current_app.config['SECRET_KEY'],
+                algorithms=['HS256', 'HS512'])
             return payload['sub'], None
 
         except jwt.DecodeError:
@@ -89,7 +97,8 @@ class BlacklistToken(db.Model, BaseModel):
     __tablename__ = 'blacklisted_tokens'
     id = Column(Integer, primary_key=True)
     token = Column(String, unique=True, nullable=False)
-    # token is unique such that once a token has been blacklisted, it can't be blacklisted again
+    # token is unique such that once a token has been
+    # blacklisted, it can't be blacklisted again
 
     def __init__(self, token):
         self.token = token
@@ -123,6 +132,8 @@ class ShoppingList(db.Model, BaseModel):
 
 
 class Item(db.Model, BaseModel):
+    """A representation of the a shoppinglist item"""
+
     __tablename__ = 'items'
     id = Column(Integer, primary_key=True, autoincrement=True)
     shoppinglist_id = Column(Integer, ForeignKey(ShoppingList.id))
