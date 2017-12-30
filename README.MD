@@ -46,31 +46,65 @@ It is assumed that you have [Python 3.6](https://www.python.org) and
 [Git](https://git-scm.com) installed on your local environment. Check to ensure
 that both are added to Path.
 
-If the virtualenv package is not installed globally, run `pip install
-virtualenv`. Then, a virtual environment can be created by running
-
-```sh
-virtualenv -p python3 ./virtualenv
-```
-
-where by the `virtualenv` is the virtual environment folder created in the
-current directory.
-
-Still in the current directory, clone this repository. Activate the virtual
-environment and install the project requirements.
+Start by cloning this repository. This will create a directory `ShoppingListAPI`
+on your local machine.
 
 ```sh
 $ git clone https://github.com/isheebo/ShoppingListAPI
+```
+
+In this directory/folder, You would need to create a Python virtual environment and activate it.
+
+If the virtualenv package is not installed globally, run `pip install virtualenv` from the commandline. Then, a
+virtual environment with name `virtualenv` can be created by running
+
+```sh
+$ virtualenv -p python3 ./virtualenv
+```
+
+On Windows, create the virtual environment as indicated below
+
+```sh
+$ virtualenv --python=<path to your python 3 executable> ./virtualenv
+```
+
+where by the `virtualenv` is the virtual environment folder created in the
+`ShoppingListAPI` directory.
+
+Then you can activate the virtual environment and install the requirements as shown below:-
+
+On Unix _(MacOS X, Linux and BSD)_ based systems,
+
+```sh
 $ cd virtualenv/bin && source activate
+$ cd ..
+$ cd ..
 $ pip install -r requirements.txt
 ```
+
+On Windows,
+
+```sh
+$ cd virtualenv/scripts
+$ activate
+$ cd ..
+$ cd ..
+$ pip install -r requirements.txt
+```
+
+**Note:**
+
+* To install the requirements using _`pip`_ as mentioned above, make sure
+  you are in the root folder _(ShoppingListAPI folder)_. That is, where the file `requirements.txt` is located in
+  the directory tree.
+* on MacOSx, Linux & BSD, `pip3` should be used instead of `pip`.
 
 ### Database Setup
 
 * [PostgreSQL](https://www.postgresql.org) is utilised on the backend. If you
   are unfamiliar with the commandline, I would recommend you install your
   PostgresSQL from the [PostgresSQL](https://www.postgresql.org/download/)
-  website. This option comes with the `pgAdmin` utility which is easier to
+  website. This option comes with the `pgAdmin` utility _(or Postgres.app for MacOs X)_ which may be easier to
   interact with when compared to the terminal or the HomeBrew installation.
 
 * If you have PostgresSQL installed, create databases `ShoppingList` and
