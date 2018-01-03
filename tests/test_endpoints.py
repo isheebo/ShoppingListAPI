@@ -34,7 +34,7 @@ class TestEndpoints(BaseTests):
                 "The given date is invalid and doesn't exist on the calendar")
 
     def test_notify_date_is_successful(self):
-        possible_cases = ["2018-01-01", "2019-04-29", "2018-07-31"]
+        possible_cases = ["2018-12-01", "2019-04-29", "2018-07-31"]
         for case in possible_cases:
             date_string, message = parse_notify_date(case)
             self.assertEqual(date_string, case)
