@@ -76,10 +76,8 @@ Then you can activate the virtual environment and install the requirements as sh
 On Unix _(MacOS X, Linux and BSD)_ based systems,
 
 ```sh
-$ cd virtualenv/bin && source activate
-$ cd ..
-$ cd ..
-$ pip install -r requirements.txt
+$ source virtualenv/bin/activate
+$ pip3 install -r requirements.txt
 ```
 
 On Windows,
