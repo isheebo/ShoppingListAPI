@@ -86,12 +86,13 @@ class TestShoppingListAPI(BaseTests):
             data['message'],
             "By {}, you may be in afterlife, please consider years in "
             "range ({}-2099)".format(
-                request_data["notify date"].split("-")[0], 
+                request_data["notify date"].split("-")[0],
                 datetime.today().year))
 
     def test_post_shoppinglist_fails_for_month_that_has_already_passed(self):
         """ If the given 'notify date' is in this year, If the month
-        specified in the date has already passed, post should fail"""
+        specified in the date has already passed, post should fail:
+        in this case, January 2018 has just passed. Feb 1st"""
 
         self.test_client.post(
             "/api/v1/auth/register",
@@ -101,7 +102,7 @@ class TestShoppingListAPI(BaseTests):
             "/api/v1/auth/login", data=self.user_data)
         data = json.loads(resp.data)
 
-        request_data = {"name": "groceries", "notify date": "2017-03-14"}
+        request_data = {"name": "groceries", "notify date": "2018-01-01"}
         resp = self.test_client.post(
             "/api/v1/shoppinglists",
             data=request_data,
@@ -110,19 +111,16 @@ class TestShoppingListAPI(BaseTests):
         data = json.loads(resp.data)
 
         # This was working in 2017. Doesn't work for 2018 January
-        # self.assertEqual(
-        #     data['message'],
-        #     "Invalid date, March 2017 has already passed by")
-
+        # updated on 1st Feb
         self.assertEqual(
-            data["message"],
-            "The year 2017 already passed, please use a valid year"
-        )
+            data['message'],
+            "Invalid date, January 2018 has already passed by")
 
     def test_post_fails_for_date_that_has_already_passed(self):
         """ If the given 'notify date' is in this year, If the month
         specified in the date is the current month but the date specified
-        has already passed, post should fail. """
+        has already passed, post should fail.
+        """
 
         self.test_client.post("/api/v1/auth/register", data=self.user_data)
 
@@ -131,7 +129,7 @@ class TestShoppingListAPI(BaseTests):
         data = json.loads(resp.data)
 
         # This works when the year is 2018 Only!
-        request_data = {"name": "groceries", "notify date": "2018-01-01"}
+        request_data = {"name": "groceries", "notify date": "2018-02-01"}
 
         resp = self.test_client.post(
             "/api/v1/shoppinglists",
