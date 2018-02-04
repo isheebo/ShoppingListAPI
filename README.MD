@@ -22,21 +22,22 @@ It consists of the following features:-
 
 ## API Endpoints
 
-| Type   | API EndPoint                                 | Public Access | Usage                                                   |
-| ------ | -------------------------------------------- | ------------- | ------------------------------------------------------- |
-| POST   | `/api/v1/auth/register`                      | TRUE          | Register a new user: requires an email and a password   |
-| POST   | `/api/v1/auth/login`                         | TRUE          | Log in a registered user using their email and password |
-| POST   | `/api/v1/auth/logout`                        | TRUE          | Use a generated authentication token to logout a user   |
-| POST   | `/api/v1/auth/reset-password`                | TRUE          | Change the password for a registered user               |
-| POST   | `/api/v1/shoppinglists`                      | FALSE         | Add a shopping list to a logged in user account         |
-| GET    | `/api/v1/shoppinglists`                      | FALSE         | View all shopping lists associated with a user account  |
-| GET    | `/api/v1/shoppinglists/<id>`                 | FALSE         | View the details of a shopping list specified by \<id\> |
-| PUT    | `/api/v1/shoppinglists/<id>`                 | FALSE         | Edit the attributes of a shopping list using its \<id\> |
-| DELETE | `/api/v1/shoppinglists/<id>`                 | FALSE         | Deletes shopping list with \<id\>                       |
-| POST   | `/api/v1/shoppinglists/<id>/items/`          | FALSE         | Add item to the shopping list with that \<id\>          |
-| GET    | `/api/v1/shoppinglists/<id>/items/`          | FALSE         | View all items in the shopping list with that \<id\>    |
-| PUT    | `/api/v1/shoppinglists/<id>/items/<item_id>` | FALSE         | Edit a shopping list item specified by \<item_id\>      |
-| DELETE | `/api/v1/shoppinglists/<id>/items/<item_id>` | FALSE         | Delete an item from the specified shopping list         |
+| Type   | API EndPoint                                 | Public Access | Usage                                                                      |
+| ------ | -------------------------------------------- | ------------- | -------------------------------------------------------------------------- |
+| POST   | `/api/v1/auth/register`                      | TRUE          | Register a new user: requires an email and a password                      |
+| POST   | `/api/v1/auth/login`                         | TRUE          | Log in a registered user using their email and password                    |
+| POST   | `/api/v1/auth/logout`                        | TRUE          | Use a generated authentication token to logout a user                      |
+| POST   | `/api/v1/auth/reset-password`                | TRUE          | Change the password for a registered user                                  |
+| POST   | `/api/v1/shoppinglists`                      | FALSE         | Add a shopping list to a logged in user account                            |
+| GET    | `/api/v1/shoppinglists`                      | FALSE         | View all shopping lists associated with a user account                     |
+| GET    | `/api/v1/shoppinglists/<id>`                 | FALSE         | View the details of a shopping list specified by \<id\>                    |
+| PUT    | `/api/v1/shoppinglists/<id>`                 | FALSE         | Edit the attributes of a shopping list using its \<id\>                    |
+| DELETE | `/api/v1/shoppinglists/<id>`                 | FALSE         | Deletes shopping list with \<id\>                                          |
+| POST   | `/api/v1/shoppinglists/<id>/items/`          | FALSE         | Add item to the shopping list with that \<id\>                             |
+| GET    | `/api/v1/shoppinglists/<id>/items/`          | FALSE         | View all items in the shopping list with that \<id\>                       |
+| GET    | `/api/v1/shoppinglists/<id>/items/<item_id>` | FALSE         | View one item on a shoppinglist with its ID \<id\> and item ID \<item_id\> |  |
+| PUT    | `/api/v1/shoppinglists/<id>/items/<item_id>` | FALSE         | Edit a shopping list item specified by \<item_id\>                         |
+| DELETE | `/api/v1/shoppinglists/<id>/items/<item_id>` | FALSE         | Delete an item from the specified shopping list                            |
 
 ## Getting Started
 
