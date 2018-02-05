@@ -114,8 +114,8 @@ class ItemsAPI(MethodView):
                         "name": item.name,
                         "price": item.price,
                         "quantity": item.quantity,
-                        "has been bought": item.has_been_bought,
-                        "date modified": item.date_modified.strftime("%Y-%m-%d %H:%M:%S")
+                        "has_been_bought": item.has_been_bought,
+                        'date_modified': item.date_modified.strftime("%Y-%m-%d %H:%M:%S")
                     }
                 )
 
@@ -123,16 +123,16 @@ class ItemsAPI(MethodView):
                 if search_query is not None:
                     return jsonify({
                         "status": "success",
-                        "matched items": list_items,
-                        "previous page": previous_page,
-                        "next page": next_page
+                        "items": list_items,
+                        "previous_page": previous_page,
+                        "next_page": next_page
                     }), 200
 
                 return jsonify({
                     "status": "success",
                     "items": list_items,
-                    "previous page": previous_page,
-                    "next page": next_page
+                    "previous_page": previous_page,
+                    "next_page": next_page
                 }), 200
 
             if search_query is not None:
@@ -170,8 +170,8 @@ class ItemsAPIByID(MethodView):
                 "name": item.name,
                 "price": item.price,
                 "quantity": item.quantity,
-                "has been bought": item.has_been_bought,
-                "date modified": item.date_modified.strftime("%Y-%m-%d %H:%M:%S")
+                "has_been_bought": item.has_been_bought,
+                'date_modified': item.date_modified.strftime("%Y-%m-%d %H:%M:%S")
             }), 200
         return jsonify({
             "status": status,
@@ -258,8 +258,8 @@ class ItemsAPIByID(MethodView):
                         'name': item.name,
                         "price": item.price,
                         "quantity": item.quantity,
-                        'date modified': item.date_modified,
-                        'has been bought': item.has_been_bought
+                        'date_modified': item.date_modified,
+                        'has_been_bought': item.has_been_bought
                     },
                     'message': 'item has been updated successfully'
                 }), 200

@@ -20,7 +20,7 @@ class TestItemsAPI(BaseTests):
         # Add a shoppinglist to a user
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2018-2-13"},
+            data={"name": "groceries", "notify_date": "2018-2-13"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         # add item to the shoppinglist 'groceries'
@@ -48,7 +48,7 @@ class TestItemsAPI(BaseTests):
         # Add a shoppinglist to a user
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2018-2-13"},
+            data={"name": "groceries", "notify_date": "2018-2-13"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         # add beans to the shoppinglist 'groceries'
@@ -83,7 +83,7 @@ class TestItemsAPI(BaseTests):
         # Add a shoppinglist to a user
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2018-2-13"},
+            data={"name": "groceries", "notify_date": "2018-2-13"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         # try adding 'beans' to 'groceries' with out specifying its quantity
@@ -174,7 +174,7 @@ class TestItemsAPI(BaseTests):
         # Add a shoppinglist to a user
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2018-2-13"},
+            data={"name": "groceries", "notify_date": "2018-2-13"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         # add item to the shoppinglist 'groceries'
@@ -208,7 +208,7 @@ class TestItemsAPI(BaseTests):
         # Add a shoppinglist to a user
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2018-2-13"},
+            data={"name": "groceries", "notify_date": "2018-2-13"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         # add 'beans' to the shoppinglist 'groceries'
@@ -248,7 +248,7 @@ class TestItemsAPI(BaseTests):
         # Add a shoppinglist to a user
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2018-2-13"},
+            data={"name": "groceries", "notify_date": "2018-2-13"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         # get the items on the 'groceries' list
@@ -273,7 +273,7 @@ class TestItemsAPI(BaseTests):
 
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2020-09-29"},
+            data={"name": "groceries", "notify_date": "2020-09-29"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         self.test_client.post(
@@ -293,8 +293,8 @@ class TestItemsAPI(BaseTests):
         self.assertEqual(resp.status_code, 200)
         data = json.loads(resp.data)
         self.assertEqual(data['status'], 'success')
-        self.assertIsInstance(data['matched items'], list)
-        self.assertEqual(len(data['matched items']), 1)
+        self.assertIsInstance(data['items'], list)
+        self.assertEqual(len(data['items']), 1)
 
     def test_get_items_with_query_succeeds_for_no_items_on_list(self):
         self.test_client.post("/api/v1/auth/register", data=self.user_data)
@@ -310,7 +310,7 @@ class TestItemsAPI(BaseTests):
         # Add a shoppinglist to a user
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2018-2-13"},
+            data={"name": "groceries", "notify_date": "2018-2-13"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         # try getting items on the 'groceries' list by querying the list
@@ -347,7 +347,7 @@ class TestItemsAPI(BaseTests):
         # Add a shoppinglist to a user
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2018-2-13"},
+            data={"name": "groceries", "notify_date": "2018-2-13"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         # add 'beans' to the shoppinglist 'groceries'

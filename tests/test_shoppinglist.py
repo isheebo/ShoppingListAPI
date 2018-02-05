@@ -19,7 +19,7 @@ class TestShoppingListAPI(BaseTests):
 
         resp = self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2018-2-13"},
+            data={"name": "groceries", "notify_date": "2018-2-13"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         self.assertEqual(resp.status_code, 201)
@@ -36,7 +36,7 @@ class TestShoppingListAPI(BaseTests):
 
         resp = self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "201x-03-14"},
+            data={"name": "groceries", "notify_date": "201x-03-14"},
             headers=dict(Authorization=f'Bearer {data["token"]}'))
         self.assertEqual(resp.status_code, 400)
         data = json.loads(resp.data)
@@ -53,7 +53,7 @@ class TestShoppingListAPI(BaseTests):
 
         token = data["token"]
 
-        request_data = {"name": "groceries", "notify date": "1000-03-14"}
+        request_data = {"name": "groceries", "notify_date": "1000-03-14"}
 
         resp = self.test_client.post(
             "/api/v1/shoppinglists",
@@ -65,7 +65,7 @@ class TestShoppingListAPI(BaseTests):
         self.assertEqual(
             data['message'],
             "The year {} already passed, please use "
-            "a valid year".format(request_data["notify date"].split("-")[0]))
+            "a valid year".format(request_data["notify_date"].split("-")[0]))
 
     def test_post_fails_for_a_notify_date_with_year_beyond_2100(self):
         self.test_client.post("/api/v1/auth/register", data=self.user_data)
@@ -74,7 +74,7 @@ class TestShoppingListAPI(BaseTests):
             "/api/v1/auth/login", data=self.user_data)
         data = json.loads(resp.data)
 
-        request_data = {"name": "groceries", "notify date": "2110-03-14"}
+        request_data = {"name": "groceries", "notify_date": "2110-03-14"}
         resp = self.test_client.post(
             "/api/v1/shoppinglists",
             data=request_data,
@@ -86,11 +86,11 @@ class TestShoppingListAPI(BaseTests):
             data['message'],
             "By {}, you may be in afterlife, please consider years in "
             "range ({}-2099)".format(
-                request_data["notify date"].split("-")[0],
+                request_data["notify_date"].split("-")[0],
                 datetime.today().year))
 
     def test_post_shoppinglist_fails_for_month_that_has_already_passed(self):
-        """ If the given 'notify date' is in this year, If the month
+        """ If the given 'notify_date' is in this year, If the month
         specified in the date has already passed, post should fail:
         in this case, January 2018 has just passed. Feb 1st"""
 
@@ -102,7 +102,7 @@ class TestShoppingListAPI(BaseTests):
             "/api/v1/auth/login", data=self.user_data)
         data = json.loads(resp.data)
 
-        request_data = {"name": "groceries", "notify date": "2018-01-01"}
+        request_data = {"name": "groceries", "notify_date": "2018-01-01"}
         resp = self.test_client.post(
             "/api/v1/shoppinglists",
             data=request_data,
@@ -117,7 +117,7 @@ class TestShoppingListAPI(BaseTests):
             "Invalid date, January 2018 has already passed by")
 
     def test_post_fails_for_date_that_has_already_passed(self):
-        """ If the given 'notify date' is in this year, If the month
+        """ If the given 'notify_date' is in this year, If the month
         specified in the date is the current month but the date specified
         has already passed, post should fail.
         """
@@ -129,7 +129,7 @@ class TestShoppingListAPI(BaseTests):
         data = json.loads(resp.data)
 
         # This works when the year is 2018 Only!
-        request_data = {"name": "groceries", "notify date": "2018-02-01"}
+        request_data = {"name": "groceries", "notify_date": "2018-02-01"}
 
         resp = self.test_client.post(
             "/api/v1/shoppinglists",
@@ -155,7 +155,7 @@ class TestShoppingListAPI(BaseTests):
         # try adding a shoppinglist.
         resp = self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2018-03-14"},
+            data={"name": "groceries", "notify_date": "2018-03-14"},
             headers=dict(Authorization=f'Bearer {data["token"]}'))
 
         self.assertEqual(resp.status_code, 401)
@@ -199,7 +199,7 @@ class TestShoppingListAPI(BaseTests):
         resp = self.test_client.post(
             "/api/v1/shoppinglists",
             data={"name": "groceries",
-                  "notify date": "2018-03-14"},
+                  "notify_date": "2018-03-14"},
             headers={"Authorization": f"Bearer {invalid_token}"})
 
         self.assertEqual(resp.status_code, 401)
@@ -218,12 +218,12 @@ class TestShoppingListAPI(BaseTests):
 
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2018-03-14"},
+            data={"name": "groceries", "notify_date": "2018-03-14"},
             headers={'Authorization': f"Bearer {data['token']}"})
 
         resp = self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2018-03-14"},
+            data={"name": "groceries", "notify_date": "2018-03-14"},
             headers={'Authorization': f"Bearer {data['token']}"})
 
         self.assertEqual(resp.status_code, 409)
@@ -252,7 +252,7 @@ class TestShoppingListAPI(BaseTests):
         self.assertEqual(data['status'], 'failure')
         self.assertEqual(
             data['message'],
-            "'name' and 'notify date' of the shoppinglist "
+            "'name' and 'notify_date' of the shoppinglist "
             "are required fields")
 
     def test_get_succeeds_if_user_already_has_shoppinglists(self):
@@ -268,12 +268,12 @@ class TestShoppingListAPI(BaseTests):
 
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2018-03-14"},
+            data={"name": "groceries", "notify_date": "2018-03-14"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "furniture", "notify date": "2018-03-14"},
+            data={"name": "furniture", "notify_date": "2018-03-14"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         resp = self.test_client.get(
@@ -328,12 +328,12 @@ class TestShoppingListAPI(BaseTests):
 
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2018-03-14"},
+            data={"name": "groceries", "notify_date": "2018-03-14"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "furniture", "notify date": "2018-03-14"},
+            data={"name": "furniture", "notify_date": "2018-03-14"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         # Getting the user's shopping lists by query
@@ -343,12 +343,12 @@ class TestShoppingListAPI(BaseTests):
         self.assertEqual(resp.status_code, 200)
         data = json.loads(resp.data)
         self.assertEqual(data['status'], "success")
-        self.assertIsInstance(data['matched lists'], list)
-        self.assertEqual(len(data['matched lists']), 1)
+        self.assertIsInstance(data['lists'], list)
+        self.assertEqual(len(data['lists']), 1)
 
-        # check the contents of data['matched lists']
-        self.assertEqual(data['matched lists'][0]['name'], 'groceries')
-        self.assertEqual(data['matched lists'][0]['id'], 1)
+        # check the contents of data['lists']
+        self.assertEqual(data['lists'][0]['name'], 'groceries')
+        self.assertEqual(data['lists'][0]['id'], 1)
 
     def test_get_by_query_works_if_query_matched_no_lists(self):
         self.test_client.post("/api/v1/auth/register", data=self.user_data)
@@ -360,12 +360,12 @@ class TestShoppingListAPI(BaseTests):
 
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2018-03-14"},
+            data={"name": "groceries", "notify_date": "2018-03-14"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "furniture", "notify date": "2018-03-14"},
+            data={"name": "furniture", "notify_date": "2018-03-14"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         resp = self.test_client.get(
@@ -431,17 +431,17 @@ class TestShoppingListAPI(BaseTests):
 
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2018-03-14"},
+            data={"name": "groceries", "notify_date": "2018-03-14"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "furniture", "notify date": "2018-03-14"},
+            data={"name": "furniture", "notify_date": "2018-03-14"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "cars", "notify date": "2018-07-14"},
+            data={"name": "cars", "notify_date": "2018-07-14"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         # Getting the user's shopping lists for page 1
@@ -456,8 +456,8 @@ class TestShoppingListAPI(BaseTests):
 
         self.assertEqual(data['lists'][0]['name'], 'groceries')
         self.assertEqual(data['lists'][0]['id'], 1)
-        self.assertIsNone(data['previous page'])
-        self.assertEqual(data['next page'],
+        self.assertIsNone(data['previous_page'])
+        self.assertEqual(data['next_page'],
                          '/api/v1/shoppinglists?page=2&limit=1')
 
         # Getting the user's shopping lists for page 2
@@ -472,9 +472,9 @@ class TestShoppingListAPI(BaseTests):
 
         self.assertEqual(data['lists'][0]['name'], 'furniture')
         self.assertEqual(data['lists'][0]['id'], 2)
-        self.assertEqual(data['previous page'],
+        self.assertEqual(data['previous_page'],
                          '/api/v1/shoppinglists?page=1&limit=1')
-        self.assertEqual(data['next page'],
+        self.assertEqual(data['next_page'],
                          '/api/v1/shoppinglists?page=3&limit=1')
 
     def test_get_shoppinglist_paginates_output_for_queried_urls(self):
@@ -487,17 +487,17 @@ class TestShoppingListAPI(BaseTests):
 
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2018-03-14"},
+            data={"name": "groceries", "notify_date": "2018-03-14"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "furniture", "notify date": "2018-03-14"},
+            data={"name": "furniture", "notify_date": "2018-03-14"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "books", "notify date": "2018-07-14"},
+            data={"name": "books", "notify_date": "2018-07-14"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         # Getting the user's shopping lists for page 1
@@ -508,13 +508,13 @@ class TestShoppingListAPI(BaseTests):
         data = json.loads(resp.data)
         self.assertEqual(data['status'], 'success')
 
-        self.assertIsInstance(data['matched lists'], list)
-        self.assertEqual(len(data['matched lists']), 1)
+        self.assertIsInstance(data['lists'], list)
+        self.assertEqual(len(data['lists']), 1)
 
-        self.assertEqual(data['matched lists'][0]['name'], 'groceries')
-        self.assertEqual(data['matched lists'][0]['id'], 1)
-        self.assertIsNone(data['previous page'])
-        self.assertEqual(data['next page'],
+        self.assertEqual(data['lists'][0]['name'], 'groceries')
+        self.assertEqual(data['lists'][0]['id'], 1)
+        self.assertIsNone(data['previous_page'])
+        self.assertEqual(data['next_page'],
                          '/api/v1/shoppinglists?page=2&limit=1&q=r')
 
         # Getting the user's shopping lists for page 2
@@ -524,11 +524,11 @@ class TestShoppingListAPI(BaseTests):
         self.assertEqual(resp.status_code, 200)
         data = json.loads(resp.data)
         self.assertEqual(data['status'], 'success')
-        self.assertIsInstance(data['matched lists'], list)
-        self.assertEqual(len(data['matched lists']), 1)
+        self.assertIsInstance(data['lists'], list)
+        self.assertEqual(len(data['lists']), 1)
 
-        self.assertEqual(data['matched lists'][0]['name'], 'furniture')
-        self.assertEqual(data['matched lists'][0]['id'], 2)
-        self.assertIsNone(data['next page'])
-        self.assertEqual(data['previous page'],
+        self.assertEqual(data['lists'][0]['name'], 'furniture')
+        self.assertEqual(data['lists'][0]['id'], 2)
+        self.assertIsNone(data['next_page'])
+        self.assertEqual(data['previous_page'],
                          '/api/v1/shoppinglists?page=1&limit=1&q=r')

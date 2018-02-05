@@ -22,7 +22,7 @@ class ShoppingListAPI(MethodView):
 
         # prevents errors due to empty string names
         name = request.form.get("name")
-        notify_date = request.form.get("notify date")
+        notify_date = request.form.get("notify_date")
 
         name = name.strip() if name else ""
         notify_date = notify_date.strip() if notify_date else ""
@@ -53,7 +53,7 @@ class ShoppingListAPI(MethodView):
             }), 201
         return jsonify({
             "status": "failure",
-            "message": "'name' and 'notify date' of the shoppinglist are required fields"
+            "message": "'name' and 'notify_date' of the shoppinglist are required fields"
         }), 400
 
     @staticmethod
@@ -110,25 +110,25 @@ class ShoppingListAPI(MethodView):
             shoppinglists.append({
                 "id": shoppinglist.id,
                 "name": shoppinglist.name,
-                "date created": shoppinglist.date_created.strftime("%Y-%m-%d %H:%M:%S"),
-                "notify date": shoppinglist.notify_date.strftime("%Y-%m-%d"),
-                "date modified": shoppinglist.date_modified.strftime("%Y-%m-%d %H:%M:%S")
+                "date_created": shoppinglist.date_created.strftime("%Y-%m-%d %H:%M:%S"),
+                "notify_date": shoppinglist.notify_date.strftime("%Y-%m-%d"),
+                "date_modified": shoppinglist.date_modified.strftime("%Y-%m-%d %H:%M:%S")
             })
 
         if shoppinglists:
             if search_query is not None:
                 return jsonify({
                     "status": "success",
-                    "matched lists": shoppinglists,
-                    "next page": next_page,
-                    "previous page": previous_page
+                    "lists": shoppinglists,
+                    "next_page": next_page,
+                    "previous_page": previous_page
                 }), 200
 
             return jsonify({
                 "status": "success",
                 "lists": shoppinglists,
-                "next page": next_page,
-                "previous page": previous_page
+                "next_page": next_page,
+                "previous_page": previous_page
             }), 200
 
         if search_query is not None:
@@ -159,7 +159,9 @@ class ShoppingListByID(MethodView):
             return jsonify({
                 "id": shoppinglist.id,
                 "name": shoppinglist.name,
-                "notify date": shoppinglist.notify_date.strftime("%Y-%m-%d"),
+                "notify_date": shoppinglist.notify_date.strftime("%Y-%m-%d"),
+                "date_created": shoppinglist.date_created.strftime("%Y-%m-%d %H:%M:%S"),
+                "date_modified": shoppinglist.date_modified.strftime("%Y-%m-%d %H:%M:%S")
             }), status_code
         return jsonify({
             "status": status,
@@ -202,7 +204,7 @@ class ShoppingListByID(MethodView):
         if shoppinglist:  # a shoppinglist with list_id exists in the database
 
             name = request.form.get("name")
-            notify_date = request.form.get("notify date")
+            notify_date = request.form.get("notify_date")
 
             name = name.strip() if name else ""
             notify_date = notify_date.strip() if notify_date else ""
@@ -243,14 +245,14 @@ class ShoppingListByID(MethodView):
                     "data": {
                         "id": shoppinglist.id,
                         "name": shoppinglist.name,
-                        "date modified": shoppinglist.date_modified,
-                        "notify date": shoppinglist.notify_date
+                        "date_modified": shoppinglist.date_modified,
+                        "notify_date": shoppinglist.notify_date
                     },
                     "message": "shoppinglist has been successfully edited!"
                 }), 200
             return jsonify({
                 "status": "failure",
-                "message": "'name' and 'notify date' of the shoppinglist are required fields"
+                "message": "'name' and 'notify_date' of the shoppinglist are required fields"
             }), 400
 
         return jsonify({

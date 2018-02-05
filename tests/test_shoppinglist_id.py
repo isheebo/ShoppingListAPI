@@ -15,7 +15,7 @@ class TestShoppingListByID(BaseTests):
 
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2018-03-14"},
+            data={"name": "groceries", "notify_date": "2018-03-14"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         resp = self.test_client.get(
@@ -37,7 +37,7 @@ class TestShoppingListByID(BaseTests):
 
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2018-03-14"},
+            data={"name": "groceries", "notify_date": "2018-03-14"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         resp = self.test_client.get(
@@ -59,7 +59,7 @@ class TestShoppingListByID(BaseTests):
 
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2018-03-14"},
+            data={"name": "groceries", "notify_date": "2018-03-14"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         resp = self.test_client.get(
@@ -100,7 +100,7 @@ class TestShoppingListByID(BaseTests):
 
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2018-03-14"},
+            data={"name": "groceries", "notify_date": "2018-03-14"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         token = data['token']
@@ -125,7 +125,7 @@ class TestShoppingListByID(BaseTests):
 
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2018-03-14"},
+            data={"name": "groceries", "notify_date": "2018-03-14"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         resp = self.test_client.delete(
@@ -147,17 +147,17 @@ class TestShoppingListByID(BaseTests):
 
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2018-03-14"},
+            data={"name": "groceries", "notify_date": "2018-03-14"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2018-03-14"},
+            data={"name": "groceries", "notify_date": "2018-03-14"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "furniture", "notify date": "2018-02-14"},
+            data={"name": "furniture", "notify_date": "2018-02-14"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         resp = self.test_client.get(
@@ -195,12 +195,12 @@ class TestShoppingListByID(BaseTests):
 
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2018-03-14"},
+            data={"name": "groceries", "notify_date": "2018-03-14"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         resp = self.test_client.put(
             "/api/v1/shoppinglists/1",
-            data={"name": "furniture", "notify date": "2018-07-14"},
+            data={"name": "furniture", "notify_date": "2018-07-14"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         self.assertEqual(resp.status_code, 200)
@@ -221,12 +221,12 @@ class TestShoppingListByID(BaseTests):
 
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2018-03-14"},
+            data={"name": "groceries", "notify_date": "2018-03-14"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         resp = self.test_client.put(
             "/api/v1/shoppinglists/1",
-            data={"name": "furniture", "notify date": "20yy-07-14"},
+            data={"name": "furniture", "notify_date": "20yy-07-14"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         self.assertEqual(resp.status_code, 400)
@@ -293,12 +293,12 @@ class TestShoppingListByID(BaseTests):
 
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2018-03-14"},
+            data={"name": "groceries", "notify_date": "2018-03-14"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         resp = self.test_client.put(
             "/api/v1/shoppinglists/1",
-            data={"name": "groceries", "notify date": "2018-03-14"},
+            data={"name": "groceries", "notify_date": "2018-03-14"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         self.assertEqual(resp.status_code, 200)
@@ -317,7 +317,7 @@ class TestShoppingListByID(BaseTests):
 
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2018-03-14"},
+            data={"name": "groceries", "notify_date": "2018-03-14"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         resp = self.test_client.put(
@@ -329,7 +329,7 @@ class TestShoppingListByID(BaseTests):
         self.assertEqual(data['status'], 'failure')
         self.assertEqual(
             data['message'],
-            "'name' and 'notify date' of the shoppinglist "
+            "'name' and 'notify_date' of the shoppinglist "
             "are required fields")
 
     def test_put_fails_if_new_name_already_exists(self):
@@ -342,17 +342,17 @@ class TestShoppingListByID(BaseTests):
 
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2018-06-14"},
+            data={"name": "groceries", "notify_date": "2018-06-14"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "books", "notify date": "2018-03-14"},
+            data={"name": "books", "notify_date": "2018-03-14"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         resp = self.test_client.put(
             "/api/v1/shoppinglists/1",
-            data={"name": "books", "notify date": "2018-02-22"},
+            data={"name": "books", "notify_date": "2018-02-22"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         self.assertEqual(resp.status_code, 409)

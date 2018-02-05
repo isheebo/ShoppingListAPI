@@ -15,7 +15,7 @@ class TestItemsAPIByID(BaseTests):
 
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2018-2-13"},
+            data={"name": "groceries", "notify_date": "2018-2-13"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         self.test_client.post(
@@ -71,12 +71,12 @@ class TestItemsAPIByID(BaseTests):
 
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2018-2-13"},
+            data={"name": "groceries", "notify_date": "2018-2-13"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2018-03-14"},
+            data={"name": "groceries", "notify_date": "2018-03-14"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         resp = self.test_client.get(
@@ -143,12 +143,12 @@ class TestItemsAPIByID(BaseTests):
 
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2018-2-13"},
+            data={"name": "groceries", "notify_date": "2018-2-13"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2018-03-14"},
+            data={"name": "groceries", "notify_date": "2018-03-14"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         resp = self.test_client.get(
@@ -181,12 +181,12 @@ class TestItemsAPIByID(BaseTests):
 
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2018-2-13"},
+            data={"name": "groceries", "notify_date": "2018-2-13"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2018-03-14"},
+            data={"name": "groceries", "notify_date": "2018-03-14"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         self.test_client.post(
@@ -218,12 +218,12 @@ class TestItemsAPIByID(BaseTests):
 
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2018-2-13"},
+            data={"name": "groceries", "notify_date": "2018-2-13"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2018-03-14"},
+            data={"name": "groceries", "notify_date": "2018-03-14"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         self.test_client.post(
@@ -261,12 +261,12 @@ class TestItemsAPIByID(BaseTests):
 
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2018-2-13"},
+            data={"name": "groceries", "notify_date": "2018-2-13"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2018-03-14"},
+            data={"name": "groceries", "notify_date": "2018-03-14"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         resp = self.test_client.delete(
@@ -309,7 +309,7 @@ class TestItemsAPIByID(BaseTests):
 
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2018-2-13"},
+            data={"name": "groceries", "notify_date": "2018-2-13"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         self.test_client.post(
@@ -389,7 +389,7 @@ class TestItemsAPIByID(BaseTests):
 
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2018-2-13"},
+            data={"name": "groceries", "notify_date": "2018-2-13"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         self.test_client.post(
@@ -424,7 +424,7 @@ class TestItemsAPIByID(BaseTests):
 
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2018-2-13"},
+            data={"name": "groceries", "notify_date": "2018-2-13"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         resp = self.test_client.put(
@@ -471,7 +471,7 @@ class TestItemsAPIByID(BaseTests):
 
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2018-2-13"},
+            data={"name": "groceries", "notify_date": "2018-2-13"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         self.test_client.post(
@@ -502,7 +502,7 @@ class TestItemsAPIByID(BaseTests):
 
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2018-2-13"},
+            data={"name": "groceries", "notify_date": "2018-2-13"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         self.test_client.post(
@@ -541,7 +541,7 @@ class TestItemsAPIByID(BaseTests):
 
         self.test_client.post(
             "/api/v1/shoppinglists",
-            data={"name": "groceries", "notify date": "2018-2-13"},
+            data={"name": "groceries", "notify_date": "2018-2-13"},
             headers=dict(Authorization=f'Bearer {token}'))
 
         self.test_client.post(
