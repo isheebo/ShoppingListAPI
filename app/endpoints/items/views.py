@@ -77,7 +77,7 @@ class ItemsAPI(MethodView):
             # the query parameters for items
             search_query = request.args.get('q', None, type=str)
             page = request.args.get('page', 1, type=int)
-            per_page = request.args.get('limit', 10, type=int)
+            per_page = request.args.get('limit', 20, type=int)
             if per_page and per_page > 20:  # pragma: no cover
                 per_page = 20
             if not per_page or per_page < 1:  # pragma: no cover
