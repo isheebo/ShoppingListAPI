@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: bfea684aecf2
+Revision ID: 70fd03f6e058
 Revises: 
-Create Date: 2017-12-14 04:58:13.903185
+Create Date: 2020-10-10 20:22:16.015530
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'bfea684aecf2'
+revision = '70fd03f6e058'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -25,7 +25,7 @@ def upgrade():
     sa.UniqueConstraint('token')
     )
     op.create_table('users',
-    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('email', sa.String(), nullable=False),
     sa.Column('password', sa.String(), nullable=False),
     sa.Column('date_added', sa.DateTime(), nullable=True),
@@ -33,7 +33,7 @@ def upgrade():
     sa.UniqueConstraint('email')
     )
     op.create_table('shoppinglists',
-    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=True),
     sa.Column('name', sa.String(), nullable=False),
     sa.Column('notify_date', sa.Date(), nullable=False),
@@ -43,7 +43,7 @@ def upgrade():
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('items',
-    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('shoppinglist_id', sa.Integer(), nullable=True),
     sa.Column('name', sa.String(), nullable=True),
     sa.Column('price', sa.String(), nullable=True),
